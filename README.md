@@ -4,3 +4,7 @@ Temat projektu: Biuro podróży (zarządzanie wycieczkami)
 
 Adam Rozwadowski
 Jakub Okuła
+
+
+# Model bazy danych
+![plot](./db_schema.png)
