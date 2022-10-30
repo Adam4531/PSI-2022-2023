@@ -1,7 +1,6 @@
-from django.shortcuts import render
 from rest_framework import generics
 
-from Tours.models import TypeOfTour
+from TravelAgency.Tours.models import TypeOfTour
 
 
 class TourCategoryList(generics.ListCreateAPIView):
