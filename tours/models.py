@@ -4,16 +4,16 @@ from django.db import models
 class TypeOfTour(models.Model):
     name = models.CharField(max_length=45, unique=True)
 
-    class Meta:
-        ordering = ('name_of_type',)
+    # class Meta:
+    #     ordering = ('name_of_type',)
 
     def __str__(self):
         return self.name
 
 
 class Price(models.Model):
-    normal_price = models.DecimalField(decimal_digits=7, decimal_places=2)
-    reduced_price = models.DecimalField(decimal_digits=7, decimal_places=2)
+    normal_price = models.DecimalField(max_digits=7, decimal_places=2)
+    reduced_price = models.DecimalField(max_digits=7, decimal_places=2)
 
 
 class Places(models.Model):
@@ -29,13 +29,13 @@ class Tour(models.Model):
     max_number_of_participants = models.IntegerField()
     date_start = models.DateField()
     date_end = models.DateField()
-    price = models.DecimalField(decimal_digits=7, decimal_places=2)
+    price = models.DecimalField(max_digits=7, decimal_places=2)
     type_of_tour = models.ForeignKey(TypeOfTour, related_name='type_of_tour', on_delete=models.CASCADE)
     place = models.ForeignKey(Places, related_name='places', on_delete=models.CASCADE)
     unit_price = models.ForeignKey(Price, related_name='price', on_delete=models.CASCADE)
 
-    class Meta:
-        ordering = ('place',)
+    # class Meta:
+    #     ordering = ('place',)
 
     def __str__(self):
         return self.place
@@ -44,11 +44,11 @@ class Tour(models.Model):
 class User(models.Model):
     email = models.CharField(max_length=30, unique=True)
     password = models.CharField(max_length=30)
-    first_name = models.CharField(45)
-    last_name = models.CharField(45)
+    first_name = models.CharField(max_length=45)
+    last_name = models.CharField(max_length=45)
 
-    class Meta:
-        ordering = ('email',)
+    # class Meta:
+    #     ordering = ('email',)
 
     def __str__(self):
         return self.email
@@ -59,5 +59,5 @@ class Reservation(models.Model):
     date = models.DateField
     amount_of_adults = models.IntegerField()
     amount_of_children = models.IntegerField()
-    total_price = models.DecimalField(decimal_digits=7, decimal_places=2)
+    total_price = models.DecimalField(max_digits=7, decimal_places=2)
     tour = models.IntegerField()
