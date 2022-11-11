@@ -13,10 +13,10 @@ Project for web design subject 2022/2023.
 Subject of the project: Travel Agency (management of the travels)
 
 
+### Stworzone przez/Created by:
 
-Adam Rozwadowski
-Jakub Okuła
-
+- Jakub Okuła
+- Adam Rozwadowski
 
 # Model bazy danych
 ![plot](./db_schema.png)
