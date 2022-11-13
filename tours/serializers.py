@@ -1,14 +1,18 @@
-from rest_framework import serializers
-import pycountry
 import datetime
+import pycountry
 from email_validator import validate_email, EmailNotValidError
+from rest_framework import serializers
 
 from tours import models
 from tours.models import TypeOfTour, Places, Price, User
 
 
 class TypeOfTourSerializer(serializers.HyperlinkedModelSerializer):
-    name = serializers.CharField(max_length=45, unique=True)
+    types = serializers.HyperlinkedModelSerializer(many=True, read_only=True, view_name='tour-categories')
+
+    class Meta:
+        model = TypeOfTour
+        fields = ['name']
 
 
 class PriceSerializer(serializers.HyperlinkedModelSerializer):
@@ -96,13 +100,14 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 
         def validate_password(self, value):
             if len(value) > 8:
-                if [A - Z] in value:  # FIXME Unresolved reference 'A' and 'Z'
-                    if [0 - 9] in value:
-                        return value
+                for el in value:
+                    if el.isupper():  # FIXME Unresolved reference 'A' and 'Z'
+                        if el.isdigit():
+                            return value
+                        else:
+                            raise serializers.ValidationError("Password need to have number", )
                     else:
-                        raise serializers.ValidationError("Password need to have number", )
-                else:
-                    raise serializers.ValidationError("Password need to have big letter", )
+                        raise serializers.ValidationError("Password need to have big letter", )
             else:
                 raise serializers.ValidationError("Short password", )
 

@@ -3,11 +3,13 @@ from rest_framework import generics
 from rest_framework.response import Response
 
 from tours.models import TypeOfTour, Tour
+from tours.serializers import TypeOfTourSerializer
 
 
 class TourCategoryList(generics.ListCreateAPIView):
-    queryset = TypeOfTour.objects.all()
-    name = 'types_of_tour'
+    queryset = TypeOfTour.objects.all() #FIXME change db table, row names and django names to universal i.e.: Django: TourCategory; db:TourCategories
+    serializer_class = TypeOfTourSerializer
+    name = 'types-of-tour'
     filterset_fields = ['name_of_type']
     search_fields = ['name_of_type']
     ordering_fields = ['name_of_type']
