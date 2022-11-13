@@ -66,7 +66,7 @@ class Migration(migrations.Migration):
                 ('amount_of_adults', models.IntegerField()),
                 ('amount_of_children', models.IntegerField()),
                 ('total_price', models.DecimalField(decimal_places=2, max_digits=7)),
-                ('tour', models.IntegerField()),
+                ('tour', models.IntegerField()), #TODO fix as foreign key
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='user', to='tours.user')),
             ],
         ),

@@ -3,10 +3,15 @@ import pycountry
 import datetime
 from email_validator import validate_email, EmailNotValidError
 
-class TypeOfTourSerializer(serializers.Serializer):
+from tours import models
+from tours.models import TypeOfTour, Places, Price, User
+
+
+class TypeOfTourSerializer(serializers.HyperlinkedModelSerializer):
     name = serializers.CharField(max_length=45, unique=True)
 
-class PriceSerializer(serializers.Serializer):
+
+class PriceSerializer(serializers.HyperlinkedModelSerializer):
     normal_price = serializers.DecimalField(max_digits=7, decimal_places=2)
     reduced_price = serializers.DecimalField(max_digits=7, decimal_places=2)
 
@@ -15,14 +20,13 @@ class PriceSerializer(serializers.Serializer):
             raise serializers.ValidationError("Don't make price lower or equal to zero", )
         return value
 
-
     def validate_normal_price(self, value):
         if value <= 0:
             raise serializers.ValidationError("Don't make price lower or equal to zero", )
         return value
 
 
-class PlacesSerializer(serializers.Serializer):
+class PlacesSerializer(serializers.HyperlinkedModelSerializer):
     country = serializers.CharField(max_length=45)
     place = serializers.CharField(max_length=45)
     accommodation = serializers.CharField(max_length=45)
@@ -35,7 +39,7 @@ class PlacesSerializer(serializers.Serializer):
         return value
 
 
-class TourSerializer(serializers.Serializer):
+class TourSerializer(serializers.HyperlinkedModelSerializer):
     max_number_of_participants = serializers.IntegerField()
     date_start = serializers.DateField()
     date_end = serializers.DateField()
@@ -60,12 +64,12 @@ class TourSerializer(serializers.Serializer):
         return value
 
     def validate_date_end(self, value):
-        if value > date_start:
+        if value > self.date_start:
             raise serializers.ValidationError("End cannot be before start", )
         return value
 
 
-class UserSerializer(serializers.Serializer):
+class UserSerializer(serializers.HyperlinkedModelSerializer):
     email = serializers.CharField(max_length=30, unique=True)
     password = serializers.CharField(max_length=30)
     first_name = serializers.CharField(max_length=45)
@@ -82,7 +86,6 @@ class UserSerializer(serializers.Serializer):
             # email is not valid, exception message is human-readable
             raise serializers.ValidationError(print(str(e)), )
 
-
         def validate_first_name(self, value):
             value = value.title()
             return value
@@ -93,8 +96,8 @@ class UserSerializer(serializers.Serializer):
 
         def validate_password(self, value):
             if len(value) > 8:
-                if [A-Z] in value:
-                    if [0-9] in value:
+                if [A - Z] in value:  # FIXME Unresolved reference 'A' and 'Z'
+                    if [0 - 9] in value:
                         return value
                     else:
                         raise serializers.ValidationError("Password need to have number", )
@@ -104,8 +107,7 @@ class UserSerializer(serializers.Serializer):
                 raise serializers.ValidationError("Short password", )
 
 
-
-class ReservationSerializer(serializers.Serializer):
+class ReservationSerializer(serializers.HyperlinkedModelSerializer):
     user = serializers.ForeignKey(User, related_name='user', on_delete=models.CASCADE)
     date = serializers.DateField
     amount_of_adults = serializers.IntegerField()
@@ -122,4 +124,3 @@ class ReservationSerializer(serializers.Serializer):
         if value < 0:
             raise serializers.ValidationError("Don't make number of childrens lower to zero", )
         return value
-

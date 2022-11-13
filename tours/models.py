@@ -60,4 +60,4 @@ class Reservation(models.Model):
     amount_of_adults = models.IntegerField()
     amount_of_children = models.IntegerField()
     total_price = models.DecimalField(max_digits=7, decimal_places=2)
-    tour = models.IntegerField()
+    tour = models.ForeignKey(Tour, related_name='tour', on_delete=models.CASCADE)
