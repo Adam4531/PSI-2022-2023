@@ -2,8 +2,8 @@ from rest_framework.reverse import reverse
 from rest_framework import generics
 from rest_framework.response import Response
 
-from tours.models import TypeOfTour, Tour
-from tours.serializers import TypeOfTourSerializer, TourSerializer
+from tours.models import TypeOfTour, Tour, Price, User, Places
+from tours.serializers import TypeOfTourSerializer, TourSerializer, PriceSerializer, UserSerializer, PlacesSerializer
 
 
 class TourCategoryList(generics.ListCreateAPIView):
@@ -21,10 +21,29 @@ class TourList(generics.ListCreateAPIView):
     name = 'tour-list'
 
 
+class PriceDetail(generics.ListCreateAPIView):
+    queryset = Price.objects.all()
+    serializer_class = PriceSerializer
+    name = 'price'
+
+class UserList(generics.ListCreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    name = 'user'
+
+class PlacesList(generics.ListCreateAPIView):
+    queryset = Places.objects.all()
+    serializer_class = PlacesSerializer
+    name = 'places'
+
+
 class ApiRoot(generics.GenericAPIView):
     name = 'api-root'
 
     def get(self, request, *args, **kwargs):
         return Response({'tour-categories': reverse(TourCategoryList.name, request=request),
-                         'tours': reverse(TourList.name, request=request)
+                         'tours': reverse(TourList.name, request=request),
+                         'price': reverse(PriceDetail.name, request=request),
+                         'user': reverse(UserList.name, request=request),
+                         'places': reverse(PlacesList.name, request=request)
                          })

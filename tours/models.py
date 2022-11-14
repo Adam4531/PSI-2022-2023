@@ -2,6 +2,7 @@ from django.db import models
 
 
 class TypeOfTour(models.Model):
+    id = models.IntegerField(primary_key=True, unique=True)
     name = models.CharField(max_length=45, unique=True)
 
     # class Meta:
@@ -26,6 +27,7 @@ class Places(models.Model):
 
 
 class Tour(models.Model):
+    id = models.IntegerField(primary_key=True, unique=True)
     max_number_of_participants = models.IntegerField()
     date_start = models.DateField()
     date_end = models.DateField()
