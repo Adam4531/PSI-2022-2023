@@ -1,21 +1,21 @@
 import datetime
+
 import pycountry
 from email_validator import validate_email, EmailNotValidError
 from rest_framework import serializers
 
-from tours import models
-from tours.models import TypeOfTour, Places, Price, User
+from tours.models import TypeOfTour, Tour
 
 
-class TypeOfTourSerializer(serializers.HyperlinkedModelSerializer):
-    types = serializers.HyperlinkedModelSerializer(many=True, read_only=True, view_name='tour-categories')
+class TypeOfTourSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(max_length=45, )
 
     class Meta:
         model = TypeOfTour
         fields = ['name']
 
 
-class PriceSerializer(serializers.HyperlinkedModelSerializer):
+class PriceSerializer(serializers.ModelSerializer): #TODO
     normal_price = serializers.DecimalField(max_digits=7, decimal_places=2)
     reduced_price = serializers.DecimalField(max_digits=7, decimal_places=2)
 
@@ -30,7 +30,7 @@ class PriceSerializer(serializers.HyperlinkedModelSerializer):
         return value
 
 
-class PlacesSerializer(serializers.HyperlinkedModelSerializer):
+class PlacesSerializer(serializers.ModelSerializer): #TODO
     country = serializers.CharField(max_length=45)
     place = serializers.CharField(max_length=45)
     accommodation = serializers.CharField(max_length=45)
@@ -43,14 +43,20 @@ class PlacesSerializer(serializers.HyperlinkedModelSerializer):
         return value
 
 
-class TourSerializer(serializers.HyperlinkedModelSerializer):
+class TourSerializer(serializers.ModelSerializer):
     max_number_of_participants = serializers.IntegerField()
     date_start = serializers.DateField()
     date_end = serializers.DateField()
     price = serializers.DecimalField(max_digits=7, decimal_places=2)
-    type_of_tour = serializers.ForeignKey(TypeOfTour, related_name='type_of_tour', on_delete=models.CASCADE)
-    place = serializers.ForeignKey(Places, related_name='places', on_delete=models.CASCADE)
-    unit_price = serializers.ForeignKey(Price, related_name='price', on_delete=models.CASCADE)
+    # type_of_tour = serializers.ForeignKey(TypeOfTour, related_name='type_of_tour', on_delete=models.CASCADE)
+    type_of_tour = TypeOfTourSerializer(many=False, read_only=True)
+    place = PlacesSerializer(many=True, read_only=True)
+    unit_price = PriceSerializer(many=False, read_only=True)
+
+    class Meta:
+        model = Tour
+        fields = ['id','max_number_of_participants','date_start','date_end','price','place','type_of_tour','unit_price']
+
 
     def validate_max_number_of_participants(self, value):
         if value <= 0:
@@ -63,7 +69,7 @@ class TourSerializer(serializers.HyperlinkedModelSerializer):
         return value
 
     def validate_date_start(self, value):
-        if value < datetime.date:
+        if value > self.date_end:
             raise serializers.ValidationError("Start cannot be in the past", )
         return value
 
@@ -73,8 +79,8 @@ class TourSerializer(serializers.HyperlinkedModelSerializer):
         return value
 
 
-class UserSerializer(serializers.HyperlinkedModelSerializer):
-    email = serializers.CharField(max_length=30, unique=True)
+class UserSerializer(serializers.ModelSerializer): #TODO
+    email = serializers.CharField(max_length=30)
     password = serializers.CharField(max_length=30)
     first_name = serializers.CharField(max_length=45)
     last_name = serializers.CharField(max_length=45)
@@ -112,8 +118,8 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
                 raise serializers.ValidationError("Short password", )
 
 
-class ReservationSerializer(serializers.HyperlinkedModelSerializer):
-    user = serializers.ForeignKey(User, related_name='user', on_delete=models.CASCADE)
+class ReservationSerializer(serializers.ModelSerializer): #TODO
+    user = UserSerializer(many=True, read_only=True)
     date = serializers.DateField
     amount_of_adults = serializers.IntegerField()
     amount_of_children = serializers.IntegerField()
