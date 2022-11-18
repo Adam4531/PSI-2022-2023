@@ -101,6 +101,8 @@ class TourSerializer(serializers.ModelSerializer):  # TODO
     def validate_price(self, value):
         if value <= 0:
             raise serializers.ValidationError("Don't make price lower or equal to zero", )
+        if value > 99999:
+            raise serializers.ValidationError("Normal price can not be higher than 99 999", )
         return value
 
     def validate_date_start(self, value):
