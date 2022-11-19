@@ -1,11 +1,10 @@
 import pycountry
+from iso3166 import countries
 from email_validator import validate_email, EmailNotValidError
 from rest_framework import serializers
 
 from tours.models import TypeOfTour, Tour, Price, Places, User, Reservation
 
-
-# TODO read about types of serializers.Slugfield/HyperLink and how to use it
 
 class TypeOfTourSerializer(serializers.ModelSerializer):
     name = serializers.CharField(max_length=45, )
@@ -43,10 +42,10 @@ class PriceSerializer(serializers.ModelSerializer):
         return reduced
 
 
-class PlacesSerializer(serializers.ModelSerializer):  # TODO
-    country = serializers.CharField(max_length=45)
-    place = serializers.CharField(max_length=45)
-    accommodation = serializers.CharField(max_length=45)
+class PlacesSerializer(serializers.ModelSerializer):
+    country = serializers.CharField(max_length=45,)
+    place = serializers.CharField(max_length=45,)
+    accommodation = serializers.CharField(max_length=45,)
 
     class Meta:
         model = Places
@@ -57,7 +56,7 @@ class PlacesSerializer(serializers.ModelSerializer):  # TODO
             raise serializers.ValidationError("Country field can not be empty!", )
         if len(value) > 45:
             raise serializers.ValidationError("Country field can have only 45 characters!", )
-        if value not in pycountry.countries.name:
+        if value not in countries:
             raise serializers.ValidationError(
                 "Country does not exist",
             )
@@ -78,15 +77,18 @@ class PlacesSerializer(serializers.ModelSerializer):  # TODO
         return value
 
 
-class TourSerializer(serializers.ModelSerializer):  # TODO
+#FIXME The `.create()` method does not support writable nested fields by default.
+# Write an explicit `.create()` method for serializer `tours.serializers.TourSerializer`,
+# or set `read_only=True` on nested serializer fields.
+
+class TourSerializer(serializers.ModelSerializer):
     max_number_of_participants = serializers.IntegerField()
     date_start = serializers.DateField()
-    date_end = serializers.DateField()
-    price = serializers.DecimalField(max_digits=7, decimal_places=2)
-    # type_of_tour = serializers.ForeignKey(TypeOfTour, related_name='type_of_tour', on_delete=models.CASCADE)
-    type_of_tour = TypeOfTourSerializer(many=False, read_only=True)
-    place = PlacesSerializer(many=True, read_only=True)
-    unit_price = PriceSerializer(many=False, read_only=True)
+    date_end = serializers.DateField() #FIXME field somehow does not exist
+    price = serializers.DecimalField(max_digits=7, decimal_places=2) #TODO do we need that?
+    type_of_tour = serializers.HyperlinkedRelatedField(many=False, read_only=True, view_name='type_of_tour')
+    place = PlacesSerializer(many=False, )
+    unit_price = PriceSerializer(many=False, )
 
     class Meta:
         model = Tour
@@ -105,15 +107,15 @@ class TourSerializer(serializers.ModelSerializer):  # TODO
             raise serializers.ValidationError("Normal price can not be higher than 99 999", )
         return value
 
-    def validate_date_start(self, value):
-        if value > self.date_end:
-            raise serializers.ValidationError("Start date cannot be in the past", )
-        return value
-
-    def validate_date_end(self, value):
-        if value > self.date_start:
-            raise serializers.ValidationError("End date cannot be before start date", )
-        return value
+    # def validate_date_start(self, value):
+    #     if value > self.date_end:
+    #         raise serializers.ValidationError("Start date cannot be in the past", )
+    #     return value
+    #
+    # def validate_date_end(self, value):
+    #     if value > self.date_start:
+    #         raise serializers.ValidationError("End date cannot be before start date", )
+    #     return value
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -157,9 +159,8 @@ class UserSerializer(serializers.ModelSerializer):
 
     def validate_password(self, value):
         if len(value) > 8:
-            for el in value:
-                if el.isupper():
-                    if el.isdigit():
+                if any(char.isupper() for char in value):
+                    if any(char.isdigit() for char in value):
                         return value
                     else:
                         raise serializers.ValidationError("Password need to have at least one number", )
@@ -175,7 +176,7 @@ class ReservationSerializer(serializers.ModelSerializer):  # TODO
     amount_of_adults = serializers.IntegerField()
     amount_of_children = serializers.IntegerField()
     total_price = serializers.DecimalField(max_digits=7, decimal_places=2)
-    tour = serializers.IntegerField()
+    tour = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
 
     class Meta:
         model = Reservation
