@@ -77,14 +77,17 @@ class PlacesSerializer(serializers.ModelSerializer):
         return value
 
 
-#FIXME The `.create()` method does not support writable nested fields by default.
-# Write an explicit `.create()` method for serializer `tours.serializers.TourSerializer`,
-# or set `read_only=True` on nested serializer fields.
+#FIXME Cannot assign "OrderedDict([('country', 'Poland'), ('place', 'Warsaw'), ('accommodation', 'Stoleczna 44')])":
+# "Tour.place" must be a "Places" instance.
+# to resolve problem you have to add view to it, i.e.:
+# Change view code, assign User object instead.
+#
+# author = User.objects.get(username=request.POST["username"])
 
 class TourSerializer(serializers.ModelSerializer):
     max_number_of_participants = serializers.IntegerField()
     date_start = serializers.DateField()
-    date_end = serializers.DateField() #FIXME field somehow does not exist
+    date_end = serializers.DateField()
     price = serializers.DecimalField(max_digits=7, decimal_places=2) #TODO do we need that?
     type_of_tour = serializers.HyperlinkedRelatedField(many=False, read_only=True, view_name='type_of_tour')
     place = PlacesSerializer(many=False, )
@@ -94,6 +97,9 @@ class TourSerializer(serializers.ModelSerializer):
         model = Tour
         fields = ['max_number_of_participants', 'date_start', 'date_end', 'price', 'place', 'type_of_tour',
                   'unit_price']
+
+    def create(self, valided_data):
+        return Tour.objects.create(**valided_data)
 
     def validate_max_number_of_participants(self, value):
         if value <= 0:
@@ -170,7 +176,7 @@ class UserSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Short have to contain at least 8 characters", )
 
 
-class ReservationSerializer(serializers.ModelSerializer):  # TODO
+class ReservationSerializer(serializers.ModelSerializer):
     user = UserSerializer(many=True, read_only=True)
     date = serializers.DateField
     amount_of_adults = serializers.IntegerField()
