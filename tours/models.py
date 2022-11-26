@@ -1,7 +1,7 @@
 from django.db import models
 
 
-class TypeOfTour(models.Model):
+class TourCategory(models.Model):
     id = models.IntegerField(primary_key=True, unique=True)
     name = models.CharField(max_length=45, unique=True)
 
@@ -17,7 +17,7 @@ class Price(models.Model):
     reduced_price = models.DecimalField(max_digits=7, decimal_places=2)
 
 
-class Places(models.Model):
+class Place(models.Model): #FIXME change name to non plural
     country = models.CharField(max_length=45)
     place = models.CharField(max_length=45)
     accommodation = models.CharField(max_length=45)
@@ -32,8 +32,8 @@ class Tour(models.Model):
     date_start = models.DateField()
     date_end = models.DateField()
     price = models.DecimalField(max_digits=7, decimal_places=2)
-    type_of_tour = models.ForeignKey(TypeOfTour, related_name='type_of_tour', on_delete=models.CASCADE)
-    place = models.ForeignKey(Places, related_name='places', on_delete=models.CASCADE)
+    type_of_tour = models.ForeignKey(TourCategory, related_name='type_of_tour', on_delete=models.CASCADE)
+    place = models.ForeignKey(Place, related_name='places', on_delete=models.CASCADE)
     unit_price = models.ForeignKey(Price, related_name='price', on_delete=models.CASCADE)
 
     # class Meta:

@@ -3,14 +3,14 @@ from iso3166 import countries
 from email_validator import validate_email, EmailNotValidError
 from rest_framework import serializers
 
-from tours.models import TypeOfTour, Tour, Price, Places, User, Reservation
+from tours.models import TourCategory, Tour, Price, Place, User, Reservation
 
 
-class TypeOfTourSerializer(serializers.ModelSerializer):
+class TourCategorySerializer(serializers.ModelSerializer):
     name = serializers.CharField(max_length=45, )
 
     class Meta:
-        model = TypeOfTour
+        model = TourCategory
         fields = ['name']
 
 
@@ -42,13 +42,13 @@ class PriceSerializer(serializers.ModelSerializer):
         return reduced
 
 
-class PlacesSerializer(serializers.ModelSerializer):
+class PlaceSerializer(serializers.ModelSerializer):
     country = serializers.CharField(max_length=45,)
     place = serializers.CharField(max_length=45,)
     accommodation = serializers.CharField(max_length=45,)
 
     class Meta:
-        model = Places
+        model = Place
         fields = ['country', 'place', 'accommodation']
 
     def validate_country(self, value):
@@ -90,7 +90,7 @@ class TourSerializer(serializers.ModelSerializer):
     date_end = serializers.DateField()
     price = serializers.DecimalField(max_digits=7, decimal_places=2) #TODO do we need that?
     type_of_tour = serializers.HyperlinkedRelatedField(many=False, read_only=True, view_name='type_of_tour')
-    place = PlacesSerializer(many=False, )
+    place = PlaceSerializer(many=False, )
     unit_price = PriceSerializer(many=False, )
 
     class Meta:
@@ -103,14 +103,19 @@ class TourSerializer(serializers.ModelSerializer):
 
     def validate_max_number_of_participants(self, value):
         if value <= 0:
-            raise serializers.ValidationError("Don't make number of participants lower or equal to zero", )
+            raise serializers.ValidationError("Don't make number of participants lower or equal to zero!", )
         return value
 
     def validate_price(self, value):
         if value <= 0:
-            raise serializers.ValidationError("Don't make price lower or equal to zero", )
+            raise serializers.ValidationError("Don't make price lower or equal to zero!", )
         if value > 99999:
-            raise serializers.ValidationError("Normal price can not be higher than 99 999", )
+            raise serializers.ValidationError("Normal price can not be higher than 99 999!", )
+        return value
+
+    def validate_date(self, value):
+        if self.date_start > self.date_end:
+            raise serializers.ValidationError("Start date cannot be before end date!", )
         return value
 
     # def validate_date_start(self, value):
