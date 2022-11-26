@@ -1,7 +1,9 @@
 from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
+from rest_framework import permissions as base_permissions
 
+from tours import permissions
 from tours.models import TourCategory, Tour, Price, User, Place
 from tours.serializers import TourCategorySerializer, TourSerializer, PriceSerializer, UserSerializer, PlaceSerializer
 
@@ -53,6 +55,8 @@ class UserList(generics.ListCreateAPIView):
 
 
 class UserDetail(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [base_permissions.IsAuthenticatedOrReadOnly,
+                          permissions.isOwnerOrReadOnly]
     queryset = User.objects.all()
     serializer_class = UserSerializer
     name = 'user-detail'
