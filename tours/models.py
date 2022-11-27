@@ -4,8 +4,8 @@ from django.db import models
 class TourCategory(models.Model):
     name = models.CharField(max_length=45, unique=True)
 
-    # class Meta:
-    #     ordering = ('name_of_type',)
+    class Meta:
+        ordering = ('name',)
 
     def __str__(self):
         return self.name
@@ -15,6 +15,8 @@ class Price(models.Model):
     normal_price = models.DecimalField(max_digits=7, decimal_places=2)
     reduced_price = models.DecimalField(max_digits=7, decimal_places=2)
 
+    class Meta:
+        ordering = ('normal_price',)
 
     def __str__(self):
         return "Normal price: " + str(self.normal_price) + " , reduced price: " + str(self.reduced_price)
@@ -24,6 +26,9 @@ class Place(models.Model):
     country = models.CharField(max_length=45)
     destination = models.CharField(max_length=45)
     accommodation = models.CharField(max_length=45)
+
+    class Meta:
+        ordering = ('destination',)
 
     def __str__(self):
         return self.country + ", " + self.destination + ", " + self.accommodation
@@ -39,8 +44,8 @@ class Tour(models.Model):
     # place = models.ManyToOneRel()
     unit_price = models.ForeignKey(Price, related_name='price', on_delete=models.CASCADE)
 
-    # class Meta:
-    #     ordering = ('place',)
+    class Meta:
+        ordering = ('type_of_tour',)
 
     def __str__(self):
         return self.place.__str__()
@@ -52,8 +57,8 @@ class User(models.Model):
     first_name = models.CharField(max_length=45)
     last_name = models.CharField(max_length=45)
 
-    # class Meta:
-    #     ordering = ('email',)
+    class Meta:
+        ordering = ('email',)
 
     def __str__(self):
         return self.email
@@ -66,3 +71,9 @@ class Reservation(models.Model):
     amount_of_children = models.IntegerField()
     total_price = models.DecimalField(max_digits=7, decimal_places=2)
     tour = models.ForeignKey(Tour, related_name='tour', on_delete=models.CASCADE)
+
+    class Meta:
+        ordering = ('date',)
+
+    def __str__(self):
+        return str(self.date) + " , amounts of adults: " + str(self.amount_of_adults) + " , amounts of children: " + str(self.amount_of_children) + " , total price: " + str(self.total_price) + " , tour: " + self.tour.__str__()
