@@ -3,10 +3,12 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework import permissions as base_permissions
 
-from tours import permissions
+from tours import custompermissions
 from tours.models import TourCategory, Tour, Price, User, Place
 from tours.serializers import TourCategorySerializer, TourSerializer, PriceSerializer, UserSerializer, PlaceSerializer
 
+
+#TODO make serializers great again, without copies
 
 class TourCategoryList(generics.ListCreateAPIView):
     queryset = TourCategory.objects.all()
@@ -17,10 +19,10 @@ class TourCategoryList(generics.ListCreateAPIView):
     ordering_fields = ['name_of_type']
 
 
-class TourCategoryDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = TourCategory.objects.all()
-    serializer_class = TourCategorySerializer
-    name = 'tourcategory-detail'
+# class TourCategoryDetail(generics.RetrieveUpdateDestroyAPIView):
+#     queryset = TourCategory.objects.all()
+#     serializer_class = TourCategorySerializer
+#     name = 'tour-category-detail'
 
 
 class TourList(generics.ListCreateAPIView):
@@ -29,10 +31,10 @@ class TourList(generics.ListCreateAPIView):
     name = 'tour-list'
 
 
-class TourDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Tour.objects.all()
-    serializer_class = TourSerializer
-    name = 'tour-detail'
+# class TourDetail(generics.RetrieveUpdateDestroyAPIView):
+#     queryset = Tour.objects.all()
+#     serializer_class = TourSerializer
+#     name = 'tour-detail'
 
 
 class PriceList(generics.ListCreateAPIView):
@@ -41,10 +43,10 @@ class PriceList(generics.ListCreateAPIView):
     name = 'price-list'
 
 
-class PriceDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Price.objects.all()
-    serializer_class = PriceSerializer
-    name = 'price-detail'
+# class PriceDetail(generics.RetrieveUpdateDestroyAPIView):
+#     queryset = Price.objects.all()
+#     serializer_class = PriceSerializer
+#     name = 'price-detail'
 
 
 class UserList(generics.ListCreateAPIView):
@@ -54,12 +56,12 @@ class UserList(generics.ListCreateAPIView):
     name = 'user'
 
 
-class UserDetail(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = [base_permissions.IsAuthenticatedOrReadOnly,
-                          permissions.isOwnerOrReadOnly]
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-    name = 'user-detail'
+# class UserDetail(generics.RetrieveUpdateDestroyAPIView):
+#     permission_classes = [base_permissions.IsAuthenticatedOrReadOnly,
+#                           custompermissions.isOwnerOrReadOnly]
+#     queryset = User.objects.all()
+#     serializer_class = UserSerializer
+#     name = 'user-detail'
 
 
 class PlaceList(generics.ListCreateAPIView):
@@ -68,10 +70,10 @@ class PlaceList(generics.ListCreateAPIView):
     name = 'places'
 
 
-class PlaceDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Place.objects.all()
-    serializer_class = PlaceSerializer
-    name = 'place-detail'
+# class PlaceDetail(generics.RetrieveUpdateDestroyAPIView):
+#     queryset = Place.objects.all()
+#     serializer_class = PlaceSerializer
+#     name = 'place-detail'
 
 
 class ApiRoot(generics.GenericAPIView):

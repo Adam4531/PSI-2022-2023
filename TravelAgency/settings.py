@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'tours.apps.ToursConfig',
+    # 'django_filters'
 ]
 
 MIDDLEWARE = [
@@ -78,7 +79,6 @@ WSGI_APPLICATION = 'TravelAgency.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        # 'NAME': BASE_DIR / 'db.sqlite3',
         'NAME': 'projekt_psi',
         'USER': 'root',
         'PASSWORD': '',

@@ -7,11 +7,12 @@ from tours.models import TourCategory, Tour, Price, Place, User, Reservation
 
 
 class TourCategorySerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(label='ID', read_only=True)
     name = serializers.CharField(max_length=45, )
 
     class Meta:
         model = TourCategory
-        fields = ['name']
+        fields = ['id','name']
 
 
 class PriceSerializer(serializers.ModelSerializer):
@@ -43,13 +44,14 @@ class PriceSerializer(serializers.ModelSerializer):
 
 
 class PlaceSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(label='ID', read_only=True)
     country = serializers.CharField(max_length=45,)
-    place = serializers.CharField(max_length=45,)
+    destination = serializers.CharField(max_length=45,)
     accommodation = serializers.CharField(max_length=45,)
 
     class Meta:
         model = Place
-        fields = ['country', 'place', 'accommodation']
+        fields = ['id','country', 'destination', 'accommodation']
 
     def validate_country(self, value):
         if len(value) == 0:
@@ -85,17 +87,18 @@ class PlaceSerializer(serializers.ModelSerializer):
 # author = User.objects.get(username=request.POST["username"])
 
 class TourSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(label='ID', read_only=True)
     max_number_of_participants = serializers.IntegerField()
     date_start = serializers.DateField()
     date_end = serializers.DateField()
     price = serializers.DecimalField(max_digits=7, decimal_places=2) #TODO do we need that?
-    type_of_tour = serializers.HyperlinkedRelatedField(many=False, read_only=True, view_name='type_of_tour')
-    place = PlaceSerializer(many=False, )
-    unit_price = PriceSerializer(many=False, )
+    type_of_tour = TourCategorySerializer(many=False,).data
+    place = PlaceSerializer(many=False, ).data
+    unit_price = PriceSerializer(many=False, ).data
 
     class Meta:
         model = Tour
-        fields = ['max_number_of_participants', 'date_start', 'date_end', 'price', 'place', 'type_of_tour',
+        fields = ['id', 'max_number_of_participants', 'date_start', 'date_end', 'price', 'place', 'type_of_tour',
                   'unit_price']
 
     def create(self, valided_data):
@@ -130,6 +133,7 @@ class TourSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(label='ID', read_only=True)
     email = serializers.CharField(max_length=30)
     password = serializers.CharField(max_length=30)
     first_name = serializers.CharField(max_length=45)
@@ -137,7 +141,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['email', 'password', 'first_name', 'last_name']
+        fields = ['id', 'email', 'password', 'first_name', 'last_name']
 
     def validate_email(self, value):
         try:
@@ -168,7 +172,7 @@ class UserSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Last name should start from Uppercase!", )
         return value
 
-    def validate_password(self, value):
+    def validate_password(self, value): #FIXME 'aiAufhalksjda' Password need to have at least one big letter
         if len(value) > 8:
                 if any(char.isupper() for char in value):
                     if any(char.isdigit() for char in value):
@@ -182,6 +186,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class ReservationSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(label='ID', read_only=True)
     user = UserSerializer(many=True, read_only=True)
     date = serializers.DateField
     amount_of_adults = serializers.IntegerField()
@@ -191,7 +196,7 @@ class ReservationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Reservation
-        fields = ['user', 'date', 'amount_of_adults', 'amount_of_children', 'total_price', 'tour']
+        fields = ['id','user', 'date', 'amount_of_adults', 'amount_of_children', 'total_price', 'tour']
 
     def validate_amount_of_adults(self, value):
         if value <= 0:

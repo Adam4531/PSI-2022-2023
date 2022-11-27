@@ -2,7 +2,6 @@ from django.db import models
 
 
 class TourCategory(models.Model):
-    id = models.IntegerField(primary_key=True, unique=True)
     name = models.CharField(max_length=45, unique=True)
 
     # class Meta:
@@ -17,30 +16,34 @@ class Price(models.Model):
     reduced_price = models.DecimalField(max_digits=7, decimal_places=2)
 
 
-class Place(models.Model): #FIXME change name to non plural
+    def __str__(self):
+        return "Normal price: " + str(self.normal_price) + " , reduced price: " + str(self.reduced_price)
+
+
+class Place(models.Model):
     country = models.CharField(max_length=45)
-    place = models.CharField(max_length=45)
+    destination = models.CharField(max_length=45)
     accommodation = models.CharField(max_length=45)
 
     def __str__(self):
-        return self.country + ", " + self.place + ", " + self.accommodation
+        return self.country + ", " + self.destination + ", " + self.accommodation
 
 
 class Tour(models.Model):
-    id = models.IntegerField(primary_key=True, unique=True)
     max_number_of_participants = models.IntegerField()
     date_start = models.DateField()
     date_end = models.DateField()
     price = models.DecimalField(max_digits=7, decimal_places=2)
-    type_of_tour = models.ForeignKey(TourCategory, related_name='type_of_tour', on_delete=models.CASCADE)
-    place = models.ForeignKey(Place, related_name='places', on_delete=models.CASCADE)
+    type_of_tour = models.ForeignKey(TourCategory, related_name='tour_category', on_delete=models.CASCADE)
+    place = models.ForeignKey(Place, related_name='place', on_delete=models.CASCADE)
+    # place = models.ManyToOneRel()
     unit_price = models.ForeignKey(Price, related_name='price', on_delete=models.CASCADE)
 
     # class Meta:
     #     ordering = ('place',)
 
     def __str__(self):
-        return self.place
+        return self.place.__str__()
 
 
 class User(models.Model):
