@@ -3,23 +3,29 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework import permissions as base_permissions
 
-from tours import custompermissions
-from tours.models import TourCategory, Tour, Price, User, Place
-from tours.serializers import TourCategorySerializer, TourSerializer, PriceSerializer, UserSerializer, PlaceSerializer
+from tours import custompagination
+from tours.models import TourCategory, Tour, Price, User, Place, Reservation
+from tours.serializers import TourCategorySerializer, TourSerializer, PriceSerializer, UserSerializer, PlaceSerializer, \
+    ReservationSerializer
 
 
-#TODO make serializers great again, without copies
+# TODO make serializers great again, without copies
 
 class TourCategoryList(generics.ListCreateAPIView):
     queryset = TourCategory.objects.all()
     serializer_class = TourCategorySerializer
+    pagination_class = custompagination.LimitOffsetPaginationWithUpperBound
     name = 'tour-categories'
     filterset_fields = ['name_of_type']
     search_fields = ['name_of_type']
     ordering_fields = ['name_of_type']
 
+    # def view_index(self, name):
+    #     queryset = TourCategory.objects.filter('')
 
-# class TourCategoryDetail(generics.RetrieveUpdateDestroyAPIView):
+
+# class createTourCategory(generics.CreateAPIView):
+
 #     queryset = TourCategory.objects.all()
 #     serializer_class = TourCategorySerializer
 #     name = 'tour-category-detail'
@@ -28,18 +34,20 @@ class TourCategoryList(generics.ListCreateAPIView):
 class TourList(generics.ListCreateAPIView):
     queryset = Tour.objects.all()
     serializer_class = TourSerializer
+    pagination_class = custompagination.LimitOffsetPaginationWithUpperBound
     name = 'tour-list'
 
 
-# class TourDetail(generics.RetrieveUpdateDestroyAPIView):
-#     queryset = Tour.objects.all()
-#     serializer_class = TourSerializer
+# class getTourByTourCategory(generics.ListAPIView):
+#     context_object_name = ''
+#     queryset = Tour
 #     name = 'tour-detail'
 
 
 class PriceList(generics.ListCreateAPIView):
     queryset = Price.objects.all()
     serializer_class = PriceSerializer
+    pagination_class = custompagination.LimitOffsetPaginationWithUpperBound
     name = 'price-list'
 
 
@@ -50,9 +58,10 @@ class PriceList(generics.ListCreateAPIView):
 
 
 class UserList(generics.ListCreateAPIView):
-    # permission_classes = [isAuthenticated]
+    permission_classes = [base_permissions.IsAuthenticatedOrReadOnly]
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    pagination_class = custompagination.LimitOffsetPaginationWithUpperBound
     name = 'user'
 
 
@@ -67,6 +76,7 @@ class UserList(generics.ListCreateAPIView):
 class PlaceList(generics.ListCreateAPIView):
     queryset = Place.objects.all()
     serializer_class = PlaceSerializer
+    pagination_class = custompagination.LimitOffsetPaginationWithUpperBound
     name = 'places'
 
 
@@ -75,6 +85,12 @@ class PlaceList(generics.ListCreateAPIView):
 #     serializer_class = PlaceSerializer
 #     name = 'place-detail'
 
+
+class ReservationList(generics.ListCreateAPIView):
+    queryset = Reservation.objects.all()
+    serializer_class = ReservationSerializer
+    pagination_class = custompagination.LimitOffsetPaginationWithUpperBound
+    name = 'reservations'
 
 class ApiRoot(generics.GenericAPIView):
     name = 'api-root'

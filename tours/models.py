@@ -1,6 +1,8 @@
 from django.db import models
 
 
+#TODO check if python uses camel case or something else
+
 class TourCategory(models.Model):
     name = models.CharField(max_length=45, unique=True)
 
@@ -34,7 +36,7 @@ class Place(models.Model):
         return self.country + ", " + self.destination + ", " + self.accommodation
 
 
-class Tour(models.Model):
+class Tour(models.Model): #FIXME foreign keys are showed as id keys but one field from this class would be more clear i.e.: type_of_tour: all-inclusive
     max_number_of_participants = models.IntegerField()
     date_start = models.DateField()
     date_end = models.DateField()
@@ -64,16 +66,18 @@ class User(models.Model):
         return self.email
 
 
-class Reservation(models.Model):
+class Reservation(models.Model):  # TODO Is field 'date' neccesary in this model?
     user = models.ForeignKey(User, related_name='user', on_delete=models.CASCADE)
-    date = models.DateField
+    dateOfReservation = models.DateTimeField(null=True, auto_created=True) #TODO check if date creates itself while POST method
     amount_of_adults = models.IntegerField()
     amount_of_children = models.IntegerField()
     total_price = models.DecimalField(max_digits=7, decimal_places=2)
     tour = models.ForeignKey(Tour, related_name='tour', on_delete=models.CASCADE)
 
     class Meta:
-        ordering = ('date',)
+        ordering = ('tour',)
 
     def __str__(self):
-        return str(self.date) + " , amounts of adults: " + str(self.amount_of_adults) + " , amounts of children: " + str(self.amount_of_children) + " , total price: " + str(self.total_price) + " , tour: " + self.tour.__str__()
+        return str(self.dateOfReservation) + " , amounts of adults: " + str(
+            self.amount_of_adults) + " , amounts of children: " + str(
+            self.amount_of_children) + " , total price: " + str(self.total_price) + " , tour: " + self.tour.__str__()
