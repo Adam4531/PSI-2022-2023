@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import pycountry
 from iso3166 import countries
 from email_validator import validate_email, EmailNotValidError
@@ -12,7 +14,7 @@ class TourCategorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TourCategory
-        fields = ['id','name']
+        fields = ['id', 'name']
 
 
 class PriceSerializer(serializers.ModelSerializer):
@@ -45,13 +47,13 @@ class PriceSerializer(serializers.ModelSerializer):
 
 class PlaceSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(label='ID', read_only=True)
-    country = serializers.CharField(max_length=45,)
-    destination = serializers.CharField(max_length=45,)
-    accommodation = serializers.CharField(max_length=45,)
+    country = serializers.CharField(max_length=45, )
+    destination = serializers.CharField(max_length=45, )
+    accommodation = serializers.CharField(max_length=45, )
 
     class Meta:
         model = Place
-        fields = ['id','country', 'destination', 'accommodation']
+        fields = ['id', 'country', 'destination', 'accommodation']
 
     def validate_country(self, value):
         if len(value) == 0:
@@ -79,7 +81,7 @@ class PlaceSerializer(serializers.ModelSerializer):
         return value
 
 
-#FIXME Cannot assign "OrderedDict([('country', 'Poland'), ('place', 'Warsaw'), ('accommodation', 'Stoleczna 44')])":
+# FIXME Cannot assign "OrderedDict([('country', 'Poland'), ('place', 'Warsaw'), ('accommodation', 'Stoleczna 44')])":
 # "Tour.place" must be a "Places" instance.
 # to resolve problem you have to add view to it, i.e.:
 # Change view code, assign User object instead.
@@ -91,8 +93,8 @@ class TourSerializer(serializers.ModelSerializer):
     max_number_of_participants = serializers.IntegerField()
     date_start = serializers.DateField()
     date_end = serializers.DateField()
-    price = serializers.DecimalField(max_digits=7, decimal_places=2) #TODO do we need that?
-    type_of_tour = TourCategorySerializer(many=False,).data
+    price = serializers.DecimalField(max_digits=7, decimal_places=2)  # TODO do we need that?
+    type_of_tour = TourCategorySerializer(many=False, ).data
     place = PlaceSerializer(many=False, ).data
     unit_price = PriceSerializer(many=False, ).data
 
@@ -172,31 +174,32 @@ class UserSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Last name should start from Uppercase!", )
         return value
 
-    def validate_password(self, value): #FIXME 'aiAufhalksjda' Password need to have at least one big letter
+    def validate_password(self, value):  # FIXME 'aiAufhalksjda' Password need to have at least one big letter
         if len(value) > 8:
-                if any(char.isupper() for char in value):
-                    if any(char.isdigit() for char in value):
-                        return value
-                    else:
-                        raise serializers.ValidationError("Password need to have at least one number", )
+            if any(char.isupper() for char in value):
+                if any(char.isdigit() for char in value):
+                    return value
                 else:
-                    raise serializers.ValidationError("Password need to have at least one big letter", )
+                    raise serializers.ValidationError("Password need to have at least one number", )
+            else:
+                raise serializers.ValidationError("Password need to have at least one big letter", )
         else:
             raise serializers.ValidationError("Short have to contain at least 8 characters", )
 
 
 class ReservationSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(label='ID', read_only=True)
-    user = UserSerializer(many=True, read_only=True)
-    date = serializers.DateField
+    user = UserSerializer(many=True, read_only=True).data
+    dateOfReservation = serializers.DateField(read_only=True)  # TODO should be set by view
     amount_of_adults = serializers.IntegerField()
     amount_of_children = serializers.IntegerField()
-    total_price = serializers.DecimalField(max_digits=7, decimal_places=2)
-    tour = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    total_price = serializers.DecimalField(default=0, max_digits=7, decimal_places=2,) #TODO total price should be calculated in the view
+    # tour = serializers.PrimaryKeyRelatedField(many=True, read_only=True).data
+    tour = TourSerializer(many=True, read_only=True).data
 
     class Meta:
         model = Reservation
-        fields = ['id','user', 'date', 'amount_of_adults', 'amount_of_children', 'total_price', 'tour']
+        fields = ['id', 'user', 'dateOfReservation', 'amount_of_adults', 'amount_of_children', 'total_price', 'tour']
 
     def validate_amount_of_adults(self, value):
         if value <= 0:

@@ -92,6 +92,7 @@ class ReservationList(generics.ListCreateAPIView):
     pagination_class = custompagination.LimitOffsetPaginationWithUpperBound
     name = 'reservations'
 
+
 class ApiRoot(generics.GenericAPIView):
     name = 'api-root'
 
@@ -101,5 +102,6 @@ class ApiRoot(generics.GenericAPIView):
                          'tours': reverse(TourList.name, request=request),
                          'prices': reverse(PriceList.name, request=request),
                          'users': reverse(UserList.name, request=request),
-                         'places': reverse(PlaceList.name, request=request)
+                         'places': reverse(PlaceList.name, request=request),
+                         'reservations': reverse(ReservationList.name, request=request)
                          })

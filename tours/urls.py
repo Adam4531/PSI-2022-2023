@@ -12,5 +12,6 @@ urlpatterns = [
     # path('user/<int:pk>/', views.UserDetail.as_view(), name=views.UserDetail.name),
     path('places', views.PlaceList.as_view(), name=views.PlaceList.name),
     # path('places/<int:pk>/', views.PlaceDetail.as_view(), name=views.PlaceDetail.name),
+    path('reservations', views.ReservationList.as_view(), name=views.ReservationList.name),
     path('', views.ApiRoot.as_view(), name=views.ApiRoot.name),
 ]

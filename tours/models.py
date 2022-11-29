@@ -66,12 +66,12 @@ class User(models.Model):
         return self.email
 
 
-class Reservation(models.Model):  # TODO Is field 'date' neccesary in this model?
+class Reservation(models.Model):
     user = models.ForeignKey(User, related_name='user', on_delete=models.CASCADE)
     dateOfReservation = models.DateTimeField(null=True, auto_created=True) #TODO check if date creates itself while POST method
     amount_of_adults = models.IntegerField()
     amount_of_children = models.IntegerField()
-    total_price = models.DecimalField(max_digits=7, decimal_places=2)
+    total_price = models.DecimalField(null=True, max_digits=7, decimal_places=2)
     tour = models.ForeignKey(Tour, related_name='tour', on_delete=models.CASCADE)
 
     class Meta:
