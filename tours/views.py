@@ -58,7 +58,7 @@ class PriceList(generics.ListCreateAPIView):
 
 
 class UserList(generics.ListCreateAPIView):
-    permission_classes = [base_permissions.IsAuthenticatedOrReadOnly]
+    # permission_classes = [base_permissions.IsAuthenticatedOrReadOnly]
     queryset = User.objects.all()
     serializer_class = UserSerializer
     pagination_class = custompagination.LimitOffsetPaginationWithUpperBound
