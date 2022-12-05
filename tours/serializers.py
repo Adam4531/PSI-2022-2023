@@ -81,12 +81,6 @@ class PlaceSerializer(serializers.HyperlinkedModelSerializer):
         return value
 
 
-# FIXME Cannot assign "OrderedDict([('country', 'Poland'), ('place', 'Warsaw'), ('accommodation', 'Stoleczna 44')])":
-# "Tour.place" must be a "Places" instance.
-# to resolve problem you have to add view to it, i.e.:
-# Change view code, assign User object instead.
-#
-# author = User.objects.get(username=request.POST["username"])
 
 class TourSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(label='ID', read_only=True)
@@ -203,7 +197,7 @@ class ReservationSerializer(serializers.ModelSerializer):
     amount_of_children = serializers.IntegerField()
     total_price = serializers.DecimalField(default=0, max_digits=7, decimal_places=2,) #TODO total price should be calculated in the view
     # tour = serializers.PrimaryKeyRelatedField(many=True, read_only=True).data
-    tour = TourSerializer(many=True, read_only=True).data
+    tour = TourSerializer(many=False, read_only=True) # many from True to False and deleted .data method/field call
 
     class Meta:
         model = Reservation
