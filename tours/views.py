@@ -2,6 +2,7 @@ from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework import permissions as base_permissions
+from django_filters import FilterSet
 
 from tours import custompagination
 from tours.models import TourCategory, Tour, Price, User, Place, Reservation
@@ -33,6 +34,16 @@ class TourList(generics.ListCreateAPIView):
     serializer_class = TourSerializer
     pagination_class = custompagination.LimitOffsetPaginationWithUpperBound
     name = 'tour-list'
+    # filterset_fields = ['']
+    # filter_class = Filter
+    # search_fields = ['']
+    # ordering_fields = ['']
+
+    # class TourFilter(FilterSet):
+
+
+        # class Meta:
+
 
 
 class TourDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -47,6 +58,9 @@ class PriceList(generics.ListCreateAPIView):
     serializer_class = PriceSerializer
     pagination_class = custompagination.LimitOffsetPaginationWithUpperBound
     name = 'price-list'
+    # filterset_fields = ['']
+    # search_fields = ['']
+    # ordering_fields = ['']
 
 
 class PriceDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -54,6 +68,13 @@ class PriceDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = PriceSerializer
     pagination_class = custompagination.LimitOffsetPaginationWithUpperBound
     name = 'price-detail'
+    # filter_class = PriceFilter
+
+
+# class PriceFilter(FilterSet):
+#
+#
+#     class Meta:
 
 
 class UserList(generics.ListCreateAPIView):
@@ -62,6 +83,9 @@ class UserList(generics.ListCreateAPIView):
     serializer_class = UserSerializer
     pagination_class = custompagination.LimitOffsetPaginationWithUpperBound
     name = 'user-list'
+    filterset_fields = ['email', 'first_name', 'last_name']
+    search_fields = ['email']
+    ordering_fields = ['last_name', 'first_name', 'email']
 
 
 class UserDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -78,6 +102,9 @@ class PlaceList(generics.ListCreateAPIView):
     serializer_class = PlaceSerializer
     pagination_class = custompagination.LimitOffsetPaginationWithUpperBound
     name = 'place-list'
+    # filterset_fields = ['']
+    # search_fields = ['']
+    # ordering_fields = ['']
 
 
 class PlaceDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -92,6 +119,12 @@ class ReservationList(generics.ListCreateAPIView):
     serializer_class = ReservationSerializer
     pagination_class = custompagination.LimitOffsetPaginationWithUpperBound
     name = 'reservation-list'
+    # filterset_fields = ['']
+    # search_fields = ['']
+    # ordering_fields = ['']
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
 
 
 class ReservationDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -106,7 +139,6 @@ class ApiRoot(generics.GenericAPIView):
 
     def get(self, request, *args, **kwargs):
         return Response({'tour-categories': reverse(TourCategoryList.name, request=request),
-                         # 'tourcategory-detail': reverse(TourCategoryDetail.name, request=request),
                          'tours': reverse(TourList.name, request=request),
                          'prices': reverse(PriceList.name, request=request),
                          'users': reverse(UserList.name, request=request),

@@ -43,7 +43,6 @@ class Tour(models.Model): #FIXME foreign keys are showed as id keys but one fiel
     price = models.DecimalField(max_digits=7, decimal_places=2)
     type_of_tour = models.ForeignKey(TourCategory, related_name='tour_category', on_delete=models.CASCADE)
     place = models.ForeignKey(Place, related_name='place', on_delete=models.CASCADE)
-    # place = models.ManyToOneRel()
     unit_price = models.ForeignKey(Price, related_name='price', on_delete=models.CASCADE)
 
     class Meta:
