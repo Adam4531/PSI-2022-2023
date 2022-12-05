@@ -50,7 +50,7 @@ class PlaceSerializer(serializers.HyperlinkedModelSerializer):
     country = serializers.CharField(max_length=45, )
     destination = serializers.CharField(max_length=45, )
     accommodation = serializers.CharField(max_length=45, )
-    tours = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='places')
+    tours = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='tour-detail')
     class Meta:
         model = Place
         fields = ['id', 'country', 'destination', 'accommodation', 'tours']
@@ -98,6 +98,7 @@ class TourSerializer(serializers.ModelSerializer):
     type_of_tour = TourCategorySerializer(many=False, ).data
     place = PlaceSerializer(many=False, ).data
     unit_price = PriceSerializer(many=False, ).data
+    # reservation = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='reservation-detail')
 
     class Meta:
         model = Tour
@@ -146,10 +147,11 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
     password = serializers.CharField(max_length=30)
     first_name = serializers.CharField(max_length=45)
     last_name = serializers.CharField(max_length=45)
-    reservations = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='user')
+    reservation = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='reservation-detail')
+
     class Meta:
         model = User
-        fields = ['id', 'email', 'password', 'first_name', 'last_name', 'reservations']
+        fields = ['id', 'email', 'password', 'first_name', 'last_name', 'reservation']
 
     def validate_email(self, value):
         try:

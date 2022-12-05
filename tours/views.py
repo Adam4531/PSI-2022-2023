@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework import permissions as base_permissions
 
-from tours import custompagination
+from tours import custompagination, custompermissions
 from tours.models import TourCategory, Tour, Price, User, Place, Reservation
 from tours.serializers import TourCategorySerializer, TourSerializer, PriceSerializer, UserSerializer, PlaceSerializer, \
     ReservationSerializer
@@ -37,11 +37,16 @@ class TourList(generics.ListCreateAPIView):
     pagination_class = custompagination.LimitOffsetPaginationWithUpperBound
     name = 'tour-list'
 
-
+#
 # class getTourByTourCategory(generics.ListAPIView):
 #     context_object_name = ''
 #     queryset = Tour
 #     name = 'tour-detail'
+
+class TourDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Tour.objects.all()
+    serializer_class = TourSerializer
+    name = 'tour-detail'
 
 
 class PriceList(generics.ListCreateAPIView):
@@ -65,12 +70,12 @@ class UserList(generics.ListCreateAPIView):
     name = 'user'
 
 
-# class UserDetail(generics.RetrieveUpdateDestroyAPIView):
-#     permission_classes = [base_permissions.IsAuthenticatedOrReadOnly,
-#                           custompermissions.isOwnerOrReadOnly]
-#     queryset = User.objects.all()
-#     serializer_class = UserSerializer
-#     name = 'user-detail'
+class UserDetail(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [base_permissions.IsAuthenticatedOrReadOnly,
+                          custompermissions.isOwnerOrReadOnly]
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    name = 'user-detail'
 
 
 class PlaceList(generics.ListCreateAPIView):
@@ -91,6 +96,11 @@ class ReservationList(generics.ListCreateAPIView):
     serializer_class = ReservationSerializer
     pagination_class = custompagination.LimitOffsetPaginationWithUpperBound
     name = 'reservations'
+
+class ReservationDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Reservation.objects.all()
+    serializer_class = ReservationSerializer
+    name = 'reservation-detail'
 
 
 class ApiRoot(generics.GenericAPIView):
