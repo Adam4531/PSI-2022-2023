@@ -82,7 +82,7 @@ class PlaceSerializer(serializers.HyperlinkedModelSerializer):
 
 
 
-class TourSerializer(serializers.ModelSerializer):
+class TourSerializer(serializers.ModelSerializer): #change to HyperlinkedModelSerializer to see error
     id = serializers.IntegerField(label='ID', read_only=True)
     max_number_of_participants = serializers.IntegerField()
     date_start = serializers.DateField()
