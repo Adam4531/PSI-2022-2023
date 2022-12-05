@@ -50,7 +50,9 @@ class PlaceSerializer(serializers.HyperlinkedModelSerializer):
     country = serializers.CharField(max_length=45, )
     destination = serializers.CharField(max_length=45, )
     accommodation = serializers.CharField(max_length=45, )
-    tours = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='places')
+    tours = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='tour-list')#stworzyc widok tour-detail i dac zamiast tour-list
+    # (to samo z rezerwacjami)
+    #Modelserializer zmienic na HyperLinkedModel, podawac widok z tours/reservations nie z places/user
     class Meta:
         model = Place
         fields = ['id', 'country', 'destination', 'accommodation', 'tours']
