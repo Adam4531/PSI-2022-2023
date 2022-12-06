@@ -2,6 +2,7 @@ from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework import permissions as base_permissions
+from django_filters import FilterSet
 
 from tours import custompagination, custompermissions
 from tours.models import TourCategory, Tour, Price, User, Place, Reservation
@@ -15,20 +16,17 @@ class TourCategoryList(generics.ListCreateAPIView):
     queryset = TourCategory.objects.all()
     serializer_class = TourCategorySerializer
     pagination_class = custompagination.LimitOffsetPaginationWithUpperBound
-    name = 'tour-categories'
+    name = 'tourcategory-list'
     filterset_fields = ['name_of_type']
     search_fields = ['name_of_type']
     ordering_fields = ['name_of_type']
 
-    # def view_index(self, name):
-    #     queryset = TourCategory.objects.filter('')
 
-
-# class createTourCategory(generics.CreateAPIView):
-
-#     queryset = TourCategory.objects.all()
-#     serializer_class = TourCategorySerializer
-#     name = 'tour-category-detail'
+class TourCategoryDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = TourCategory.objects.all()
+    serializer_class = TourCategorySerializer
+    pagination_class = custompagination.LimitOffsetPaginationWithUpperBound
+    name = 'tourcategory-detail'
 
 
 class TourList(generics.ListCreateAPIView):
@@ -36,12 +34,24 @@ class TourList(generics.ListCreateAPIView):
     serializer_class = TourSerializer
     pagination_class = custompagination.LimitOffsetPaginationWithUpperBound
     name = 'tour-list'
+    # filterset_fields = ['']
+    # filter_class = Filter
+    # search_fields = ['']
+    # ordering_fields = ['']
 
-#
-# class getTourByTourCategory(generics.ListAPIView):
-#     context_object_name = ''
-#     queryset = Tour
-#     name = 'tour-detail'
+    # class TourFilter(FilterSet):
+    
+
+        # class Meta:
+
+
+
+class TourDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Tour.objects.all()
+    serializer_class = TourSerializer
+    pagination_class = custompagination.LimitOffsetPaginationWithUpperBound
+    name = 'tour-detail'
+
 
 class TourDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Tour.objects.all()
@@ -54,12 +64,23 @@ class PriceList(generics.ListCreateAPIView):
     serializer_class = PriceSerializer
     pagination_class = custompagination.LimitOffsetPaginationWithUpperBound
     name = 'price-list'
+    # filterset_fields = ['']
+    # search_fields = ['']
+    # ordering_fields = ['']
 
 
-# class PriceDetail(generics.RetrieveUpdateDestroyAPIView):
-#     queryset = Price.objects.all()
-#     serializer_class = PriceSerializer
-#     name = 'price-detail'
+class PriceDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Price.objects.all()
+    serializer_class = PriceSerializer
+    pagination_class = custompagination.LimitOffsetPaginationWithUpperBound
+    name = 'price-detail'
+    # filter_class = PriceFilter
+
+
+# class PriceFilter(FilterSet):
+#
+#
+#     class Meta:
 
 
 class UserList(generics.ListCreateAPIView):
@@ -67,14 +88,18 @@ class UserList(generics.ListCreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     pagination_class = custompagination.LimitOffsetPaginationWithUpperBound
-    name = 'user'
+    name = 'user-list'
+    filterset_fields = ['email', 'first_name', 'last_name']
+    search_fields = ['email']
+    ordering_fields = ['last_name', 'first_name', 'email']
 
 
 class UserDetail(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = [base_permissions.IsAuthenticatedOrReadOnly,
-                          custompermissions.isOwnerOrReadOnly]
+    #     permission_classes = [base_permissions.IsAuthenticatedOrReadOnly,
+    #                           custompermissions.isOwnerOrReadOnly]
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    pagination_class = custompagination.LimitOffsetPaginationWithUpperBound
     name = 'user-detail'
 
 
@@ -82,20 +107,37 @@ class PlaceList(generics.ListCreateAPIView):
     queryset = Place.objects.all()
     serializer_class = PlaceSerializer
     pagination_class = custompagination.LimitOffsetPaginationWithUpperBound
-    name = 'places'
+    name = 'place-list'
+    # filterset_fields = ['']
+    # search_fields = ['']
+    # ordering_fields = ['']
 
 
-# class PlaceDetail(generics.RetrieveUpdateDestroyAPIView):
-#     queryset = Place.objects.all()
-#     serializer_class = PlaceSerializer
-#     name = 'place-detail'
+class PlaceDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Place.objects.all()
+    serializer_class = PlaceSerializer
+    pagination_class = custompagination.LimitOffsetPaginationWithUpperBound
+    name = 'place-detail'
 
 
 class ReservationList(generics.ListCreateAPIView):
     queryset = Reservation.objects.all()
     serializer_class = ReservationSerializer
     pagination_class = custompagination.LimitOffsetPaginationWithUpperBound
-    name = 'reservations'
+    name = 'reservation-list'
+    # filterset_fields = ['']
+    # search_fields = ['']
+    # ordering_fields = ['']
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+
+
+class ReservationDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Reservation.objects.all()
+    serializer_class = ReservationSerializer
+    pagination_class = custompagination.LimitOffsetPaginationWithUpperBound
+    name = 'reservation-detail'
 
 class ReservationDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Reservation.objects.all()
@@ -108,7 +150,6 @@ class ApiRoot(generics.GenericAPIView):
 
     def get(self, request, *args, **kwargs):
         return Response({'tour-categories': reverse(TourCategoryList.name, request=request),
-                         # 'tourcategory-detail': reverse(TourCategoryDetail.name, request=request),
                          'tours': reverse(TourList.name, request=request),
                          'prices': reverse(PriceList.name, request=request),
                          'users': reverse(UserList.name, request=request),
