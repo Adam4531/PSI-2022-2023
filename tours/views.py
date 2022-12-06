@@ -4,7 +4,7 @@ from rest_framework.reverse import reverse
 from rest_framework import permissions as base_permissions
 from django_filters import FilterSet
 
-from tours import custompagination
+from tours import custompagination, custompermissions
 from tours.models import TourCategory, Tour, Price, User, Place, Reservation
 from tours.serializers import TourCategorySerializer, TourSerializer, PriceSerializer, UserSerializer, PlaceSerializer, \
     ReservationSerializer
@@ -40,7 +40,7 @@ class TourList(generics.ListCreateAPIView):
     # ordering_fields = ['']
 
     # class TourFilter(FilterSet):
-
+    
 
         # class Meta:
 
@@ -50,6 +50,12 @@ class TourDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Tour.objects.all()
     serializer_class = TourSerializer
     pagination_class = custompagination.LimitOffsetPaginationWithUpperBound
+    name = 'tour-detail'
+
+
+class TourDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Tour.objects.all()
+    serializer_class = TourSerializer
     name = 'tour-detail'
 
 
@@ -78,7 +84,7 @@ class PriceDetail(generics.RetrieveUpdateDestroyAPIView):
 
 
 class UserList(generics.ListCreateAPIView):
-    permission_classes = [base_permissions.IsAuthenticatedOrReadOnly]
+    # permission_classes = [base_permissions.IsAuthenticatedOrReadOnly]
     queryset = User.objects.all()
     serializer_class = UserSerializer
     pagination_class = custompagination.LimitOffsetPaginationWithUpperBound
@@ -131,6 +137,11 @@ class ReservationDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Reservation.objects.all()
     serializer_class = ReservationSerializer
     pagination_class = custompagination.LimitOffsetPaginationWithUpperBound
+    name = 'reservation-detail'
+
+class ReservationDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Reservation.objects.all()
+    serializer_class = ReservationSerializer
     name = 'reservation-detail'
 
 
