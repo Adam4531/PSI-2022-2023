@@ -37,8 +37,6 @@ class PriceSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Reduced price can not be higher than normal price", )
         return value
 
-
-
     def validate_reduced_price_compared_to_normal_price(self, reduced, normal):
         if reduced > normal:
             raise serializers.ValidationError("Reduced price can not be higher than normal price!", )
@@ -51,6 +49,7 @@ class PlaceSerializer(serializers.HyperlinkedModelSerializer):
     destination = serializers.CharField(max_length=45, )
     accommodation = serializers.CharField(max_length=45, )
     tours = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='tour-detail')
+
     class Meta:
         model = Place
         fields = ['id', 'country', 'destination', 'accommodation', 'tours']
@@ -81,8 +80,7 @@ class PlaceSerializer(serializers.HyperlinkedModelSerializer):
         return value
 
 
-
-class TourSerializer(serializers.ModelSerializer): #change to HyperlinkedModelSerializer to see error
+class TourSerializer(serializers.HyperlinkedModelSerializer):  # change to HyperlinkedModelSerializer to see error
     id = serializers.IntegerField(label='ID', read_only=True)
     max_number_of_participants = serializers.IntegerField()
     date_start = serializers.DateField()
@@ -114,17 +112,6 @@ class TourSerializer(serializers.ModelSerializer): #change to HyperlinkedModelSe
             raise serializers.ValidationError("Normal price can not be higher than 99 999!", )
         return value
 
-    # def validate_date(self, value):
-    #     today = date.today()
-    #     if len(value) > 1:
-    #         raise serializers.ValidationError("There must be start and end", )
-    #     if value[0] < today:
-    #         raise serializers.ValidationError("Start date cannot be in the past", )
-    #     if value[0] > value[1]:
-    #         raise serializers.ValidationError("Start date cannot be before end date!", )
-    #     return value
-
-
     def validate(self, value):
         today = date.today()
         if value['date_start'] < today:
@@ -132,7 +119,6 @@ class TourSerializer(serializers.ModelSerializer): #change to HyperlinkedModelSe
         if value['date_end'] < value['date_start']:
             raise serializers.ValidationError("End date cannot be before start date", )
         return value
-
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -195,9 +181,9 @@ class ReservationSerializer(serializers.ModelSerializer):
     dateOfReservation = serializers.DateField(read_only=True)  # TODO should be set by view
     amount_of_adults = serializers.IntegerField()
     amount_of_children = serializers.IntegerField()
-    total_price = serializers.DecimalField(default=0, max_digits=7, decimal_places=2,) #TODO total price should be calculated in the view
-    # tour = serializers.PrimaryKeyRelatedField(many=True, read_only=True).data
-    tour = TourSerializer(many=False, read_only=True) # many from True to False and deleted .data method/field call
+    total_price = serializers.DecimalField(default=0, max_digits=7,
+                                           decimal_places=2, )  # TODO total price should be calculated in the view
+    tour = TourSerializer(many=False, read_only=False).data  # many from True to False and deleted .data method/field call
 
     class Meta:
         model = Reservation

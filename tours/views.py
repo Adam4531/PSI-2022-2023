@@ -1,10 +1,8 @@
 from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
-from rest_framework import permissions as base_permissions
-from django_filters import FilterSet
 
-from tours import custompagination, custompermissions
+from tours import custompagination
 from tours.models import TourCategory, Tour, Price, User, Place, Reservation
 from tours.serializers import TourCategorySerializer, TourSerializer, PriceSerializer, UserSerializer, PlaceSerializer, \
     ReservationSerializer
@@ -34,28 +32,20 @@ class TourList(generics.ListCreateAPIView):
     serializer_class = TourSerializer
     pagination_class = custompagination.LimitOffsetPaginationWithUpperBound
     name = 'tour-list'
-    # filterset_fields = ['']
+    filterset_fields = ['date_start', 'date_end', 'price', 'type_of_tour', 'place', 'unit_price']
     # filter_class = Filter
-    # search_fields = ['']
-    # ordering_fields = ['']
+    search_fields = ['date_start', 'date_end', 'price', 'type_of_tour', 'place', 'unit_price']
+    ordering_fields = ['type_of_tour', 'place', 'date_start', 'price']
 
     # class TourFilter(FilterSet):
-    
 
-        # class Meta:
-
+    # class Meta:
 
 
 class TourDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Tour.objects.all()
     serializer_class = TourSerializer
     pagination_class = custompagination.LimitOffsetPaginationWithUpperBound
-    name = 'tour-detail'
-
-
-class TourDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Tour.objects.all()
-    serializer_class = TourSerializer
     name = 'tour-detail'
 
 
@@ -65,8 +55,8 @@ class PriceList(generics.ListCreateAPIView):
     pagination_class = custompagination.LimitOffsetPaginationWithUpperBound
     name = 'price-list'
     # filterset_fields = ['']
-    # search_fields = ['']
-    # ordering_fields = ['']
+    search_fields = ['normal_price']
+    ordering_fields = ['normal_price']
 
 
 class PriceDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -74,7 +64,6 @@ class PriceDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = PriceSerializer
     pagination_class = custompagination.LimitOffsetPaginationWithUpperBound
     name = 'price-detail'
-    # filter_class = PriceFilter
 
 
 # class PriceFilter(FilterSet):
@@ -108,9 +97,9 @@ class PlaceList(generics.ListCreateAPIView):
     serializer_class = PlaceSerializer
     pagination_class = custompagination.LimitOffsetPaginationWithUpperBound
     name = 'place-list'
-    # filterset_fields = ['']
-    # search_fields = ['']
-    # ordering_fields = ['']
+    filterset_fields = ['destination', 'country', 'accommodation']
+    search_fields = ['destination', 'country', 'accommodation']
+    ordering_fields = ['destination', 'country', 'accomomdation']
 
 
 class PlaceDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -125,23 +114,18 @@ class ReservationList(generics.ListCreateAPIView):
     serializer_class = ReservationSerializer
     pagination_class = custompagination.LimitOffsetPaginationWithUpperBound
     name = 'reservation-list'
-    # filterset_fields = ['']
-    # search_fields = ['']
-    # ordering_fields = ['']
+    filterset_fields = ['dateOfReservation', 'tour', 'total_price', 'amount_of_adults', 'amount_of_children']
+    search_fields = ['tour', 'total_price', 'dateOfReservation']
+    ordering_fields = ['dateOfReservation', 'tour', 'amount_of_adults', 'total_price']
 
-    def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+    # def perform_create(self, serializer):
+    #     serializer.save(user=self.request.user)
 
 
 class ReservationDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Reservation.objects.all()
     serializer_class = ReservationSerializer
     pagination_class = custompagination.LimitOffsetPaginationWithUpperBound
-    name = 'reservation-detail'
-
-class ReservationDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Reservation.objects.all()
-    serializer_class = ReservationSerializer
     name = 'reservation-detail'
 
 

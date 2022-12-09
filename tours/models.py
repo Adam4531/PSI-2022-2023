@@ -1,8 +1,6 @@
 from django.db import models
 
 
-#TODO check if python uses camel case or something else
-
 class TourCategory(models.Model):
     name = models.CharField(max_length=45, unique=True)
 
@@ -36,7 +34,7 @@ class Place(models.Model):
         return self.country + ", " + self.destination + ", " + self.accommodation
 
 
-class Tour(models.Model): #FIXME foreign keys are showed as id keys but one field from this class would be more clear i.e.: type_of_tour: all-inclusive
+class Tour(models.Model):  # FIXME foreign keys are showed as id keys but one field from this class would be more clear i.e.: type_of_tour: all-inclusive
     max_number_of_participants = models.IntegerField()
     date_start = models.DateField()
     date_end = models.DateField()
@@ -48,7 +46,7 @@ class Tour(models.Model): #FIXME foreign keys are showed as id keys but one fiel
     class Meta:
         ordering = ('type_of_tour',)
 
-    def __str__(self):
+    def __str__(self): #TODO modify clearer description for tour
         return self.place.__str__()
 
 
@@ -65,9 +63,10 @@ class User(models.Model):
         return self.email
 
 
-class Reservation(models.Model):
-    user = models.ForeignKey(User, related_name='user', on_delete=models.CASCADE)
-    dateOfReservation = models.DateTimeField(null=True, auto_created=True) #TODO check if date creates itself while POST method
+class Reservation(models.Model):  # TODO change field arguments 'null=True' to 'allow_null=True'
+    user = models.ForeignKey(User, on_delete=models.CASCADE) # FIXME ValueError: Cannot assign "<django.contrib.auth.models.AnonymousUser object at 0x0000022D90E70610>": "Reservation.user" must be a "User" instance.
+    dateOfReservation = models.DateTimeField(null=True,
+                                             auto_created=True)  # TODO check if date creates itself while POST method
     amount_of_adults = models.IntegerField()
     amount_of_children = models.IntegerField()
     total_price = models.DecimalField(null=True, max_digits=7, decimal_places=2)
