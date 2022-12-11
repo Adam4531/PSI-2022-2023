@@ -33,9 +33,12 @@ class TourList(generics.ListCreateAPIView):
     pagination_class = custompagination.LimitOffsetPaginationWithUpperBound
     name = 'tour-list'
     filterset_fields = ['date_start', 'date_end', 'price', 'type_of_tour', 'place', 'unit_price']
-    # filter_class = Filter
+    # filter_class = TourFilter
     search_fields = ['date_start', 'date_end', 'price', 'type_of_tour', 'place', 'unit_price']
     ordering_fields = ['type_of_tour', 'place', 'date_start', 'price']
+
+
+    # def get_object(self):
 
     # class TourFilter(FilterSet):
 
@@ -47,6 +50,8 @@ class TourDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = TourSerializer
     pagination_class = custompagination.LimitOffsetPaginationWithUpperBound
     name = 'tour-detail'
+
+    # def get_object(self):
 
 
 class PriceList(generics.ListCreateAPIView):
@@ -119,7 +124,11 @@ class ReservationList(generics.ListCreateAPIView):
     ordering_fields = ['dateOfReservation', 'tour', 'amount_of_adults', 'total_price']
 
     # def perform_create(self, serializer):
+
     #     serializer.save(user=self.request.user)
+
+    # def change_total_price(self):
+    #     self.total_price = self.amount_of_adults* self.tour.+ self.amount_of_children * self.reduced_price
 
 
 class ReservationDetail(generics.RetrieveUpdateDestroyAPIView):

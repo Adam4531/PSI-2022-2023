@@ -178,12 +178,12 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 class ReservationSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(label='ID', read_only=True)
     user = UserSerializer(many=True, read_only=True).data
-    dateOfReservation = serializers.DateField(read_only=True)  # TODO should be set by view
+    dateOfReservation = serializers.DateField(read_only=True)  # TODO should be set in the view
     amount_of_adults = serializers.IntegerField()
     amount_of_children = serializers.IntegerField()
     total_price = serializers.DecimalField(default=0, max_digits=7,
                                            decimal_places=2, )  # TODO total price should be calculated in the view
-    tour = TourSerializer(many=False, read_only=False).data  # many from True to False and deleted .data method/field call
+    tour = TourSerializer(many=False, read_only=False).data
 
     class Meta:
         model = Reservation
@@ -199,8 +199,7 @@ class ReservationSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Number of the children can not be lower than zero!", )
         return value
 
-    def validate_date(self, value):  # TODO how to validate this date? "reservationDate < now" does not have any sense
-        # now = datetime.now()
+    def validate_date(self, value):
         if len(value) == 0:
             raise serializers.ValidationError("Date field can not be empty!", )
         return value
