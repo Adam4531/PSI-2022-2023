@@ -8,7 +8,7 @@ from tours.serializers import TourCategorySerializer, TourSerializer, PriceSeria
     ReservationSerializer
 
 
-# TODO make serializers great again, without copies
+# TODO check if copies are possible
 
 class TourCategoryList(generics.ListCreateAPIView):
     queryset = TourCategory.objects.all()

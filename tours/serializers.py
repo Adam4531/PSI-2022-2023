@@ -7,13 +7,12 @@ from rest_framework import serializers
 from tours.models import TourCategory, Tour, Price, Place, User, Reservation
 
 
-class TourCategorySerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField(label='ID', read_only=True)
-    name = serializers.CharField(max_length=45, )
+class TourCategorySerializer(serializers.HyperlinkedModelSerializer):
+    tours = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='tour-detail')
 
     class Meta:
         model = TourCategory
-        fields = ['id', 'name']
+        fields = [ 'url', 'name', 'tours']
 
 
 class PriceSerializer(serializers.ModelSerializer):
@@ -36,11 +35,6 @@ class PriceSerializer(serializers.ModelSerializer):
         if value['normal_price'] <= value['reduced_price']:
             raise serializers.ValidationError("Reduced price can not be higher than normal price", )
         return value
-
-    def validate_reduced_price_compared_to_normal_price(self, reduced, normal):
-        if reduced > normal:
-            raise serializers.ValidationError("Reduced price can not be higher than normal price!", )
-        return reduced
 
 
 class PlaceSerializer(serializers.HyperlinkedModelSerializer):
@@ -81,21 +75,19 @@ class PlaceSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class TourSerializer(serializers.HyperlinkedModelSerializer):  # change to HyperlinkedModelSerializer to see error
-    id = serializers.IntegerField(label='ID', read_only=True)
     max_number_of_participants = serializers.IntegerField()
     date_start = serializers.DateField()
     date_end = serializers.DateField()
-    # date = serializers.ListField(child=serializers.DateField())
     # price = serializers.DecimalField(max_digits=7, decimal_places=2)  # TODO do we need that?
     type_of_tour = TourCategorySerializer(many=False, ).data
     place = PlaceSerializer(many=False, ).data
     unit_price = PriceSerializer(many=False, ).data
-    # reservation = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='reservation-detail')
+    reservations = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='reservation-detail')
 
     class Meta:
         model = Tour
-        fields = ['id', 'max_number_of_participants', 'date_start', 'date_end', 'price', 'place', 'type_of_tour',
-                  'unit_price']
+        fields = ['url', 'max_number_of_participants', 'date_start', 'date_end', 'price', 'place', 'type_of_tour',
+                  'unit_price','reservations']
 
     def create(self, valided_data):
         return Tour.objects.create(**valided_data)
