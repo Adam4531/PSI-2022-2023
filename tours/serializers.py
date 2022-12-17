@@ -12,16 +12,16 @@ class TourCategorySerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = TourCategory
-        fields = ['url', 'name', 'tours']
+        fields = ['pk','url', 'name', 'tours']
 
 
-class PriceSerializer(serializers.ModelSerializer):
+class PriceSerializer(serializers.HyperlinkedModelSerializer):
     normal_price = serializers.DecimalField(max_digits=7, decimal_places=2)
     reduced_price = serializers.DecimalField(max_digits=7, decimal_places=2)
 
     class Meta:
         model = Price
-        fields = ['normal_price', 'reduced_price']
+        fields = ['url', 'normal_price', 'reduced_price']
 
     def validate(self, value):
         if value['reduced_price'] <= 0:
@@ -38,7 +38,6 @@ class PriceSerializer(serializers.ModelSerializer):
 
 
 class PlaceSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.IntegerField(label='ID', read_only=True)
     country = serializers.CharField(max_length=45, )
     destination = serializers.CharField(max_length=45, )
     accommodation = serializers.CharField(max_length=45, )
@@ -46,7 +45,7 @@ class PlaceSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Place
-        fields = ['id', 'country', 'destination', 'accommodation', 'tours']
+        fields = ['pk','url', 'country', 'destination', 'accommodation', 'tours']
 
     def validate_country(self, value):
         if len(value) == 0:
@@ -86,8 +85,8 @@ class TourSerializer(serializers.HyperlinkedModelSerializer):  # change to Hyper
 
     class Meta:
         model = Tour
-        fields = ['url', 'max_number_of_participants', 'date_start', 'date_end', 'price', 'place', 'type_of_tour',
-                  'unit_price','reservations']
+        fields = ['pk', 'url', 'max_number_of_participants', 'date_start', 'date_end', 'price', 'place', 'type_of_tour',
+                  'unit_price', 'reservations']
 
     def create(self, valided_data):
         return Tour.objects.create(**valided_data)
@@ -114,7 +113,6 @@ class TourSerializer(serializers.HyperlinkedModelSerializer):  # change to Hyper
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.IntegerField(label='ID', read_only=True)
     email = serializers.CharField(max_length=30)
     password = serializers.CharField(max_length=30)
     first_name = serializers.CharField(max_length=45)
@@ -123,7 +121,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'email', 'password', 'first_name', 'last_name', 'reservation']
+        fields = ['pk', 'url', 'email', 'password', 'first_name', 'last_name', 'reservation']
 
     def validate_email(self, value):
         try:
@@ -167,8 +165,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
             raise serializers.ValidationError("Short have to contain at least 8 characters", )
 
 
-class ReservationSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField(label='ID', read_only=True)
+class ReservationSerializer(serializers.HyperlinkedModelSerializer):
     user = UserSerializer(many=True, read_only=True).data
     dateOfReservation = serializers.DateField(read_only=True)  # TODO should be set in the view
     amount_of_adults = serializers.IntegerField()
@@ -179,7 +176,7 @@ class ReservationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Reservation
-        fields = ['id', 'user', 'dateOfReservation', 'amount_of_adults', 'amount_of_children', 'total_price', 'tour']
+        fields = ['pk','url', 'user', 'dateOfReservation', 'amount_of_adults', 'amount_of_children', 'total_price', 'tour']
 
     def validate_amount_of_adults(self, value):
         if value <= 0:
