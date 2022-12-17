@@ -12,7 +12,7 @@ class TourCategorySerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = TourCategory
-        fields = [ 'url', 'name', 'tours']
+        fields = ['url', 'name', 'tours']
 
 
 class PriceSerializer(serializers.ModelSerializer):
