@@ -4,7 +4,7 @@ from rest_framework.reverse import reverse
 
 from tours import custompagination
 from tours.models import TourCategory, Tour, Price, User, Place, Reservation
-from tours.serializers import TourCategorySerializer, TourSerializer, PriceSerializer, UserSerializer, PlaceSerializer, \
+from tours.serializers import TourCategorySerializer, TourSerializer, PriceSerializer, UserSerializer, PlaceSerializer,\
     ReservationSerializer
 
 
@@ -37,8 +37,11 @@ class TourList(generics.ListCreateAPIView):
     search_fields = ['date_start', 'date_end', 'price', 'type_of_tour', 'place', 'unit_price']
     ordering_fields = ['type_of_tour', 'place', 'date_start', 'price']
 
+    # def get(self, request):
+    #     tours = Tour.objects.all()
+    #     serializer = TourSerializer(tours, many=True, context={'request':request})
+    #     return Response(serializer.data)
 
-    # def get_object(self):
 
     # class TourFilter(FilterSet):
 
@@ -51,7 +54,6 @@ class TourDetail(generics.RetrieveUpdateDestroyAPIView):
     pagination_class = custompagination.LimitOffsetPaginationWithUpperBound
     name = 'tour-detail'
 
-    # def get_object(self):
 
 
 class PriceList(generics.ListCreateAPIView):

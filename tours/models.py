@@ -34,7 +34,7 @@ class Place(models.Model):
         return self.country + ", " + self.destination + ", " + self.accommodation
 
 
-class Tour(models.Model):  # FIXME foreign keys are showed as id keys but one field from this class would be more clear i.e.: type_of_tour: all-inclusive
+class Tour(models.Model):
     max_number_of_participants = models.IntegerField()
     date_start = models.DateField()
     date_end = models.DateField()
@@ -46,8 +46,11 @@ class Tour(models.Model):  # FIXME foreign keys are showed as id keys but one fi
     class Meta:
         ordering = ('type_of_tour',)
 
-    def __str__(self): #TODO modify clearer description for tour
-        return self.place.__str__()
+    def __str__(self):
+        return "max number of participants: " + str(self.max_number_of_participants) + ", period from " + \
+               self.date_start.__str__() + " to " + self.date_end.__str__() + ", price: " + str(self.price) + \
+               ", type of tour: " + self.type_of_tour.__str__() + ", destination: " + self.place.__str__() + \
+               ", price per 1 person: " + str(self.unit_price)
 
 
 class User(models.Model):
@@ -64,13 +67,13 @@ class User(models.Model):
 
 
 class Reservation(models.Model):  # TODO change field arguments 'null=True' to 'allow_null=True'
-    user = models.ForeignKey(User, on_delete=models.CASCADE) # FIXME ValueError: Cannot assign "<django.contrib.auth.models.AnonymousUser object at 0x0000022D90E70610>": "Reservation.user" must be a "User" instance.
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     dateOfReservation = models.DateTimeField(null=True,
                                              auto_created=True)  # TODO check if date creates itself while POST method
     amount_of_adults = models.IntegerField()
     amount_of_children = models.IntegerField()
     total_price = models.DecimalField(null=True, max_digits=7, decimal_places=2)
-    tour = models.ForeignKey(Tour, related_name='tour', on_delete=models.CASCADE)
+    tour = models.ForeignKey(Tour, related_name='reservations', on_delete=models.CASCADE)
 
     class Meta:
         ordering = ('tour',)
