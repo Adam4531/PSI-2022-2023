@@ -39,9 +39,9 @@ class Tour(models.Model):
     date_start = models.DateField()
     date_end = models.DateField()
     price = models.DecimalField(max_digits=7, decimal_places=2)
-    type_of_tour = models.ForeignKey(TourCategory, related_name='tour_category', on_delete=models.CASCADE)
-    place = models.ForeignKey(Place, related_name='place', on_delete=models.CASCADE)
-    unit_price = models.ForeignKey(Price, related_name='price', on_delete=models.CASCADE)
+    type_of_tour = models.ForeignKey(TourCategory, related_name='tours', on_delete=models.CASCADE)
+    place = models.ForeignKey(Place, related_name='tours', on_delete=models.CASCADE)
+    unit_price = models.ForeignKey(Price, related_name='tours', on_delete=models.CASCADE)
 
     class Meta:
         ordering = ('type_of_tour',)
@@ -67,7 +67,7 @@ class User(models.Model):
 
 
 class Reservation(models.Model):  # TODO change field arguments 'null=True' to 'allow_null=True'
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name='reservations', on_delete=models.CASCADE)
     dateOfReservation = models.DateTimeField(null=True,
                                              auto_created=True)  # TODO check if date creates itself while POST method
     amount_of_adults = models.IntegerField()

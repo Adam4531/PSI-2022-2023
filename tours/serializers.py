@@ -18,10 +18,11 @@ class TourCategorySerializer(serializers.HyperlinkedModelSerializer):
 class PriceSerializer(serializers.HyperlinkedModelSerializer):
     normal_price = serializers.DecimalField(max_digits=7, decimal_places=2)
     reduced_price = serializers.DecimalField(max_digits=7, decimal_places=2)
+    tours = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='tour-detail')
 
     class Meta:
         model = Price
-        fields = ['url', 'normal_price', 'reduced_price']
+        fields = ['url', 'normal_price', 'reduced_price', 'tours']
 
     def validate(self, value):
         if value['reduced_price'] <= 0:
@@ -117,11 +118,11 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
     password = serializers.CharField(max_length=30)
     first_name = serializers.CharField(max_length=45)
     last_name = serializers.CharField(max_length=45)
-    reservation = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='reservation-detail')
+    reservations = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='reservation-detail')
 
     class Meta:
         model = User
-        fields = ['pk', 'url', 'email', 'password', 'first_name', 'last_name', 'reservation']
+        fields = ['pk', 'url', 'email', 'password', 'first_name', 'last_name', 'reservations']
 
     def validate_email(self, value):
         try:
