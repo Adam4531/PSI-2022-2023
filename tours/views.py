@@ -1,7 +1,8 @@
-from rest_framework import generics
+from rest_framework import generics, permissions
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
-
+from .custompermissions import isOwnerOrReadOnly
+from django_filters import AllValuesFilter, DateTimeFilter, NumberFilter, FilterSet
 from tours import custompagination
 from tours.models import TourCategory, Tour, Price, User, Place, Reservation
 from tours.serializers import TourCategorySerializer, TourSerializer, PriceSerializer, UserSerializer, PlaceSerializer,\
@@ -27,15 +28,34 @@ class TourCategoryDetail(generics.RetrieveUpdateDestroyAPIView):
     name = 'tourcategory-detail'
 
 
+# class StartTourFilter(FilterSet):
+#     from_birthdate = DateTimeFilter(field_name='date_start', lookup_expr='gte')
+#     to_birthdate = DateTimeFilter(field_name='date_start', lookup_expr='lte')
+#
+#     class Meta:
+#         model = Tour
+#         fields = ['from_date_start', 'to_date_start']
+
+
+# class StartToEndTourFilter(FilterSet):
+#     from_birthdate = DateTimeFilter(field_name='date_start', lookup_expr='gte')
+#     to_birthdate = DateTimeFilter(field_name='date_end', lookup_expr='lte')
+#
+#     class Meta:
+#         model = Tour
+#         fields = ['from_date_start', 'from_date_end']
+
+
 class TourList(generics.ListCreateAPIView):
     queryset = Tour.objects.all()
     serializer_class = TourSerializer
     pagination_class = custompagination.LimitOffsetPaginationWithUpperBound
     name = 'tour-list'
     filterset_fields = ['date_start', 'date_end', 'price', 'type_of_tour', 'place', 'unit_price']
-    # filter_class = TourFilter
+    # filter_class = (StartTourFilter, StartToEndTourFilter)
     search_fields = ['date_start', 'date_end', 'price', 'type_of_tour', 'place', 'unit_price']
     ordering_fields = ['type_of_tour', 'place', 'date_start', 'price']
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly, isOwnerOrReadOnly,)
 
     # def get(self, request):
     #     tours = Tour.objects.all()
@@ -52,14 +72,23 @@ class TourDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Tour.objects.all()
     serializer_class = TourSerializer
     pagination_class = custompagination.LimitOffsetPaginationWithUpperBound
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly, isOwnerOrReadOnly,)
     name = 'tour-detail'
 
+class PriceFilter(FilterSet):
+    min_price = NumberFilter(field_name='normal_price', lookup_expr='gte')
+    max_price = NumberFilter(field_name='normal_price', lookup_expr='lte')
 
+    class Meta:
+        model: Price
+        fields = ['min_price', 'max_price']
 
 class PriceList(generics.ListCreateAPIView):
     queryset = Price.objects.all()
     serializer_class = PriceSerializer
     pagination_class = custompagination.LimitOffsetPaginationWithUpperBound
+    permission_classes = (permissions.IsAdminUser,)
+    filter_class = PriceFilter
     name = 'price-list'
     # filterset_fields = ['']
     search_fields = ['normal_price']
@@ -70,13 +99,9 @@ class PriceDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Price.objects.all()
     serializer_class = PriceSerializer
     pagination_class = custompagination.LimitOffsetPaginationWithUpperBound
+    permission_classes = (permissions.IsAdminUser,)
     name = 'price-detail'
 
-
-# class PriceFilter(FilterSet):
-#
-#
-#     class Meta:
 
 
 class UserList(generics.ListCreateAPIView):
@@ -84,6 +109,7 @@ class UserList(generics.ListCreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     pagination_class = custompagination.LimitOffsetPaginationWithUpperBound
+    permission_classes = (permissions.IsAdminUser, )
     name = 'user-list'
     filterset_fields = ['email', 'first_name', 'last_name']
     search_fields = ['email']
@@ -96,6 +122,7 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     pagination_class = custompagination.LimitOffsetPaginationWithUpperBound
+    permission_classes = (permissions.IsAdminUser, isOwnerOrReadOnly, )
     name = 'user-detail'
 
 
@@ -103,6 +130,7 @@ class PlaceList(generics.ListCreateAPIView):
     queryset = Place.objects.all()
     serializer_class = PlaceSerializer
     pagination_class = custompagination.LimitOffsetPaginationWithUpperBound
+    permission_classes = (permissions.IsAdminUser,)
     name = 'place-list'
     filterset_fields = ['destination', 'country', 'accommodation']
     search_fields = ['destination', 'country', 'accommodation']
@@ -113,6 +141,7 @@ class PlaceDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Place.objects.all()
     serializer_class = PlaceSerializer
     pagination_class = custompagination.LimitOffsetPaginationWithUpperBound
+    permission_classes = (permissions.IsAdminUser, )
     name = 'place-detail'
 
 
@@ -120,6 +149,7 @@ class ReservationList(generics.ListCreateAPIView):
     queryset = Reservation.objects.all()
     serializer_class = ReservationSerializer
     pagination_class = custompagination.LimitOffsetPaginationWithUpperBound
+    permission_classes = (permissions.IsAdminUser, )
     name = 'reservation-list'
     filterset_fields = ['dateOfReservation', 'tour', 'total_price', 'amount_of_adults', 'amount_of_children']
     search_fields = ['tour', 'total_price', 'dateOfReservation']
@@ -137,6 +167,7 @@ class ReservationDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Reservation.objects.all()
     serializer_class = ReservationSerializer
     pagination_class = custompagination.LimitOffsetPaginationWithUpperBound
+    permission_classes = (permissions.IsAdminUser, isOwnerOrReadOnly, )
     name = 'reservation-detail'
 
 
