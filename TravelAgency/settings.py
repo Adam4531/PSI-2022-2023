@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'tours.apps.ToursConfig',
-    # 'django_filters'
+    'django_filters'
 ]
 
 MIDDLEWARE = [

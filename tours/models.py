@@ -67,7 +67,7 @@ class User(models.Model):
 
 
 class Reservation(models.Model):  # TODO change field arguments 'null=True' to 'allow_null=True'
-    user = models.ForeignKey(User, related_name='reservations', on_delete=models.CASCADE)
+    user = models.ForeignKey('auth.User', related_name='reservations', on_delete=models.CASCADE)
     dateOfReservation = models.DateTimeField(null=True,
                                              auto_created=True)  # TODO check if date creates itself while POST method
     amount_of_adults = models.IntegerField()

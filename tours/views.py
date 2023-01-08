@@ -5,11 +5,9 @@ from .custompermissions import isOwnerOrReadOnly
 from django_filters import AllValuesFilter, DateTimeFilter, NumberFilter, FilterSet
 from tours import custompagination
 from tours.models import TourCategory, Tour, Price, User, Place, Reservation
-from tours.serializers import TourCategorySerializer, TourSerializer, PriceSerializer, UserSerializer, PlaceSerializer,\
+from tours.serializers import TourCategorySerializer, TourSerializer, PriceSerializer, UserSerializer, PlaceSerializer, \
     ReservationSerializer
 
-
-# TODO check if copies are possible
 
 class TourCategoryList(generics.ListCreateAPIView):
     queryset = TourCategory.objects.all()
@@ -62,7 +60,6 @@ class TourList(generics.ListCreateAPIView):
     #     serializer = TourSerializer(tours, many=True, context={'request':request})
     #     return Response(serializer.data)
 
-
     # class TourFilter(FilterSet):
 
     # class Meta:
@@ -75,6 +72,7 @@ class TourDetail(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (permissions.IsAuthenticatedOrReadOnly, isOwnerOrReadOnly,)
     name = 'tour-detail'
 
+
 class PriceFilter(FilterSet):
     min_price = NumberFilter(field_name='normal_price', lookup_expr='gte')
     max_price = NumberFilter(field_name='normal_price', lookup_expr='lte')
@@ -82,6 +80,7 @@ class PriceFilter(FilterSet):
     class Meta:
         model: Price
         fields = ['min_price', 'max_price']
+
 
 class PriceList(generics.ListCreateAPIView):
     queryset = Price.objects.all()
@@ -103,13 +102,12 @@ class PriceDetail(generics.RetrieveUpdateDestroyAPIView):
     name = 'price-detail'
 
 
-
 class UserList(generics.ListCreateAPIView):
     # permission_classes = [base_permissions.IsAuthenticatedOrReadOnly]
     queryset = User.objects.all()
     serializer_class = UserSerializer
     pagination_class = custompagination.LimitOffsetPaginationWithUpperBound
-    permission_classes = (permissions.IsAdminUser, )
+    permission_classes = (permissions.IsAdminUser,)
     name = 'user-list'
     filterset_fields = ['email', 'first_name', 'last_name']
     search_fields = ['email']
@@ -122,7 +120,7 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     pagination_class = custompagination.LimitOffsetPaginationWithUpperBound
-    permission_classes = (permissions.IsAdminUser, isOwnerOrReadOnly, )
+    permission_classes = (permissions.IsAdminUser, isOwnerOrReadOnly,)
     name = 'user-detail'
 
 
@@ -141,7 +139,7 @@ class PlaceDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Place.objects.all()
     serializer_class = PlaceSerializer
     pagination_class = custompagination.LimitOffsetPaginationWithUpperBound
-    permission_classes = (permissions.IsAdminUser, )
+    permission_classes = (permissions.IsAdminUser,)
     name = 'place-detail'
 
 
@@ -149,15 +147,14 @@ class ReservationList(generics.ListCreateAPIView):
     queryset = Reservation.objects.all()
     serializer_class = ReservationSerializer
     pagination_class = custompagination.LimitOffsetPaginationWithUpperBound
-    permission_classes = (permissions.IsAdminUser, )
+    permission_classes = (permissions.IsAdminUser,)
     name = 'reservation-list'
     filterset_fields = ['dateOfReservation', 'tour', 'total_price', 'amount_of_adults', 'amount_of_children']
     search_fields = ['tour', 'total_price', 'dateOfReservation']
     ordering_fields = ['dateOfReservation', 'tour', 'amount_of_adults', 'total_price']
 
-    # def perform_create(self, serializer):
-
-    #     serializer.save(user=self.request.user)
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
     # def change_total_price(self):
     #     self.total_price = self.amount_of_adults* self.tour.+ self.amount_of_children * self.reduced_price
@@ -167,7 +164,7 @@ class ReservationDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Reservation.objects.all()
     serializer_class = ReservationSerializer
     pagination_class = custompagination.LimitOffsetPaginationWithUpperBound
-    permission_classes = (permissions.IsAdminUser, isOwnerOrReadOnly, )
+    permission_classes = (permissions.IsAdminUser, isOwnerOrReadOnly,)
     name = 'reservation-detail'
 
 
