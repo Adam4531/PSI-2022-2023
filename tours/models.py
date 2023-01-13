@@ -25,7 +25,7 @@ class Price(models.Model):
 class Place(models.Model):
     country = models.CharField(max_length=45)
     destination = models.CharField(max_length=45)
-    accommodation = models.CharField(max_length=45)
+    accommodation = models.CharField(max_length=45, unique=True)
 
     class Meta:
         ordering = ('destination',)

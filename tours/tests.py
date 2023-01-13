@@ -11,7 +11,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase, APIClient
 from rest_framework.reverse import reverse
 from . import views
-from .models import TourCategory, Price, Tour
+from .models import TourCategory, Price, Tour, Place
 
 
 class TourCategoryTests(APITestCase):
@@ -134,12 +134,12 @@ class PriceTests(APITestCase):
     #     assert reponse.data['results'][0]['normal_price'] == new_normal_price_1
 
 
-
-class TourTests(APITestCase):  # TODO
+class TourTests(APITestCase):  # TODO test_post_and_get_tour
     def create_tour_category(self, user):
         url = reverse(views.TourCategoryList.name)
         data = {'id': 1, 'name': 'all-inclusive'}
         user.post(url, data, format='json')
+        return data
 
     def create_place(self, user):
         url = reverse(views.PlaceList.name)
@@ -160,11 +160,13 @@ class TourTests(APITestCase):  # TODO
         response = client.post(url, data, format='json')
         return response
 
-    # def test_post_and_get_tour(self):
+    # def test_post_and_get_tour(self):#FIXME
     #     user = User.objects.create_superuser('admin', 'admin@admin.com', 'admin123')
     #     client = APIClient()
     #     client.login(username='admin', password='admin123')
+    #
     #     self.create_tour_category(client)
+    #     self.create_place(client)
     #     new_max_number_of_participants = 150
     #     new_date_start = datetime.date.today()
     #     new_date_end = new_date_start + datetime.timedelta(days=5)
@@ -174,8 +176,72 @@ class TourTests(APITestCase):  # TODO
     #     response = self.create_tour(new_max_number_of_participants, new_date_start, new_date_end, new_price, new_place,
     #                                 new_unit_price, client)
     #     print("PK {0}".format(Tour.objects.get().pk))
-    #     print(Tour.objects.all().get())
+    #     print(Tour.objects.get().pk)
     #     assert response.status_code == status.HTTP_201_CREATED
     #     assert Tour.objects.count() == 1
     # assert Price.objects.get().normal_price == new_normal_price
     # assert Price.objects.get().reduced_price == new_reduced_price
+
+
+class UserTests(APITestCase):
+    def create_user(self, email, password, first_name, last_name, client):
+        url = reverse(views.UserList.name)
+        data = {'email': email,
+                'password': password,
+                'first_name': first_name,
+                'last_name': last_name}
+        response = client.post(url, data, format='json')
+        return response
+
+    def test_post_and_get_user(self):#FIXME
+        User.objects.create_superuser('admin', 'admin@admin.com', 'admin123')
+        client = APIClient()
+        client.login(username='admin', password='admin123')
+
+        new_email = 'kowalski@gmail.com'
+        new_password = 'Kowalski2212'
+        new_first_name = 'Janusz'
+        new_last_name = 'Kowalski'
+        response = self.create_user(new_email, new_password, new_first_name, new_last_name, client)
+        assert response.status_code == status.HTTP_201_CREATED
+
+# class ReservationTests(APITestCase): #TODO
+
+
+class PlaceTests(APITestCase):
+    def post_place(self, country, destination, accommodation, client):
+        url = reverse(views.PlaceList.name)
+        data = {'country': country,
+                'destination': destination,
+                'accommodation': accommodation}
+        response = client.post(url, data, format='json')
+        return response
+
+    def test_post_and_get_place(self):
+        User.objects.create_superuser('admin', 'admin@admin.com', 'admin123')
+        client = APIClient()
+        client.login(username='admin', password='admin123')
+
+        country = 'Germany'
+        place = 'Berlin'
+        accommodation = 'newBerlinHotel'
+        response = self.post_place(country, place, accommodation, client)
+        print("PK {0}".format(Place.objects.get().pk))
+        assert response.status_code == status.HTTP_201_CREATED
+        assert Place.objects.count() == 1
+        assert Place.objects.get().country == country
+
+    def test_post_existing_tour_place(self):#FIXME
+        User.objects.create_superuser('admin', 'admin@admin.com', 'admin123')
+        client = APIClient()
+        client.login(username='admin', password='admin123')
+
+        country = 'Germany'
+        place = 'Berlin'
+        accommodation = 'newBerlinHotel'
+
+        response_one = self.post_place(country, place, accommodation, client)
+        assert response_one.status_code == status.HTTP_201_CREATED
+        response_two = self.post_place(country, place, accommodation, client)
+        print(response_two)
+        assert response_two.status_code == status.HTTP_201_CREATED #FIXME returned mysql error code 1062 but should HTTP 400
