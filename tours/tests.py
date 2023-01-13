@@ -1,11 +1,17 @@
+import datetime
+import decimal
+from decimal import Decimal
+
+from MySQLdb import Date
 from django import urls
+from django.contrib.auth.models import User
 from django.test import TestCase
 from django.utils.http import urlencode
 from rest_framework import status
 from rest_framework.test import APITestCase, APIClient
 from rest_framework.reverse import reverse
 from . import views
-from .models import TourCategory
+from .models import TourCategory, Price, Tour
 
 
 class TourCategoryTests(APITestCase):
@@ -74,3 +80,102 @@ class TourCategoryTests(APITestCase):
         assert get_response.data['name'] == tour_category_name
 
 
+class PriceTests(APITestCase):
+    def post_price(self, normal_price, reduced_price, user):
+        url = reverse(views.PriceList.name)
+        data = {'normal_price': normal_price, 'reduced_price': reduced_price}
+        response = user.post(url, data, format='json')
+        return response
+
+    def test_post_and_get_price(self):
+        new_normal_price: Decimal = Decimal(1500.20).quantize(Decimal('1.00'))
+        new_reduced_price = decimal.Decimal(1000.35).quantize(Decimal('1.00'))
+        user = User.objects.create_superuser('admin', 'admin@admin.com', 'admin123')
+        client = APIClient()
+        client.login(username='admin', password='admin123')
+        response = self.post_price(new_normal_price, new_reduced_price, client)
+        print("PK {0}".format(Price.objects.get().pk))
+        assert response.status_code == status.HTTP_201_CREATED
+        assert Price.objects.count() == 1
+        assert Price.objects.get().normal_price == new_normal_price
+        assert Price.objects.get().reduced_price == new_reduced_price
+
+    # def test_post_existing_price(self):
+    #     user = User.objects.create_superuser('admin', 'admin@admin.com', 'admin123')
+    #     client = APIClient()
+    #     client.login(username='admin', password='admin123')
+    #
+    #     url = reverse(views.TourCategoryList.name)
+    #     new_normal_price: Decimal = Decimal(1500.20).quantize(Decimal('1.00'))
+    #     new_reduced_price = decimal.Decimal(1000.35).quantize(Decimal('1.00'))
+    #     reponse_one = self.post_price(new_normal_price, new_reduced_price, client)
+    #     assert reponse_one.status_code == status.HTTP_201_CREATED
+    #     response_two = self.post_price(new_normal_price, new_reduced_price, client)
+    #     assert response_two.status_code == status.HTTP_400_BAD_REQUEST
+
+    # def test_filter_price_by_normal_price(self):
+    #     new_normal_price_1 = Decimal(1500.20).quantize(Decimal('1.00'))
+    #     new_reduced_price_1 = decimal.Decimal(1000.30).quantize(Decimal('1.00'))
+    #     new_normal_price_2 = Decimal(1500.35).quantize(Decimal('1.00'))
+    #     new_reduced_price_2 = decimal.Decimal(1000.15).quantize(Decimal('1.00'))
+    #
+    #     user = User.objects.create_superuser('admin', 'admin@admin.com', 'admin123')
+    #     client = APIClient()
+    #     client.login(username='admin', password='admin123')
+    #
+    #     self.post_price(new_normal_price_1, new_reduced_price_1, client)
+    #     self.post_price(new_normal_price_2, new_reduced_price_2, client)
+    #     filter_by_normal_price = {'normal_price': new_normal_price_1}
+    #     url = '{0}?{1}'.format(reverse(views.PriceList.name), urlencode(filter_by_normal_price))
+    #     print(url)
+    #     reponse = self.client.get(url, format='json')
+    #     assert reponse.status_code == status.HTTP_200_OK
+    #     assert reponse.data['count'] == 2
+    #     assert reponse.data['results'][0]['normal_price'] == new_normal_price_1
+
+
+
+class TourTests(APITestCase):  # TODO
+    def create_tour_category(self, user):
+        url = reverse(views.TourCategoryList.name)
+        data = {'id': 1, 'name': 'all-inclusive'}
+        user.post(url, data, format='json')
+
+    def create_place(self, user):
+        url = reverse(views.PlaceList.name)
+        data = {'country': 'Germany',
+                'place': 'Berlin',
+                'accommodation': 'newBerlinHotel'}
+        user.post(url, data, format='json')
+        return data
+
+    def create_tour(self, max_number_of_partcipants, date_start, date_end, price, place, unit_price, client):
+        url = reverse(views.TourList.name)
+        data = {'max_number_of_participants': max_number_of_partcipants,
+                'date_start': date_start,
+                'date_end': date_end,
+                'price': price,
+                'place': place,
+                'unit_price': unit_price}
+        response = client.post(url, data, format='json')
+        return response
+
+    # def test_post_and_get_tour(self):
+    #     user = User.objects.create_superuser('admin', 'admin@admin.com', 'admin123')
+    #     client = APIClient()
+    #     client.login(username='admin', password='admin123')
+    #     self.create_tour_category(client)
+    #     new_max_number_of_participants = 150
+    #     new_date_start = datetime.date.today()
+    #     new_date_end = new_date_start + datetime.timedelta(days=5)
+    #     new_price: Decimal = Decimal(1500.20).quantize(Decimal('1.00'))
+    #     new_place = self.create_place(client)
+    #     new_unit_price: Decimal = Decimal(1500.20).quantize(Decimal('1.00'))
+    #     response = self.create_tour(new_max_number_of_participants, new_date_start, new_date_end, new_price, new_place,
+    #                                 new_unit_price, client)
+    #     print("PK {0}".format(Tour.objects.get().pk))
+    #     print(Tour.objects.all().get())
+    #     assert response.status_code == status.HTTP_201_CREATED
+    #     assert Tour.objects.count() == 1
+    # assert Price.objects.get().normal_price == new_normal_price
+    # assert Price.objects.get().reduced_price == new_reduced_price

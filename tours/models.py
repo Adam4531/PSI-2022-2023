@@ -12,8 +12,8 @@ class TourCategory(models.Model):
 
 
 class Price(models.Model):
-    normal_price = models.DecimalField(max_digits=7, decimal_places=2)
-    reduced_price = models.DecimalField(max_digits=7, decimal_places=2)
+    normal_price = models.DecimalField(max_digits=7, decimal_places=2, unique=True)
+    reduced_price = models.DecimalField(max_digits=7, decimal_places=2, unique=True)
 
     class Meta:
         ordering = ('normal_price',)
