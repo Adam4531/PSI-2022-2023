@@ -3,6 +3,8 @@ import datetime
 import graphene
 from graphene_django import DjangoObjectType
 from .models import Price, Tour, User, Reservation
+from graphene import ObjectType, Field, String
+
 
 
 class PriceType(DjangoObjectType):
@@ -34,6 +36,8 @@ class Query(graphene.ObjectType):
     tours = graphene.List(TourType)
     users = graphene.List(UserType)
     reservations = graphene.List(ReservationType)
+    reservations_by_place = graphene.List(ReservationType, place=graphene.String())
+
 
     def resolve_prices(root, info, **kwargs):
         return Price.objects.all()
@@ -46,6 +50,9 @@ class Query(graphene.ObjectType):
 
     def resolve_reservations(root, info, **kwargs):
         return Reservation.objects.all()
+
+    async def resolve_reservations_by_place(root, info, place: String):
+        return Reservation.objects.all(place=place)
 
 
 

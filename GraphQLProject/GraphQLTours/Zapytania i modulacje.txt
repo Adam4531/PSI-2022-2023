@@ -1,0 +1,159 @@
+#1
+{
+  tours{
+  	id,
+  	maxNumberOfParticipants,
+  	dateEnd,
+  	dateStart,
+	price,
+  	place,
+  	unitPrice{
+    		normalPrice,
+    		reducedPrice,
+  	}
+  }
+}
+
+
+#2
+{
+  reservations{
+    id,
+    dateOfReservation,
+    amountOfAdults,
+    amountOfChildren,
+    tour{
+      id,
+      unitPrice{
+        normalPrice,
+        reducedPrice,
+      }
+    }
+  }
+}
+
+
+#3
+{
+  reservations{
+    id,
+    user{
+      id,
+      email,
+    },
+    totalPrice,
+  }
+}
+
+
+#4
+query Query{
+  reservations {
+    id,
+    tour {
+      id,
+      place,
+    },
+    user {
+      email
+    }
+  }
+}
+
+
+#5 Error:
+z acync: "Expected Iterable, but did not find one for field 'Query.reservationsByPlace'."
+bez async: "There is no current event loop in thread 'Thread-2'."
+
+query GetReservationByTour($tour_place: String!) {
+  reservationsByPlace(place: $tour_place) {
+    id
+    tour {
+      id
+      place
+    }
+  }
+}
+
+#6
+{
+  reservations{
+    id,
+    user{
+      id,
+      email,
+    },
+    totalPrice,
+    tour{
+      id,
+      place,
+      unitPrice{
+        normalPrice,
+        reducedPrice
+      }
+    }
+  }
+}
+
+
+
+
+#1
+mutation{
+  delete_tour:deleteTour(id: "1"){
+    ok
+  }
+}
+
+#1
+mutation{
+  create_price:createPrice(input: {normalPrice:200, reducedPrice:100}){
+    price{
+      normalPrice,
+      reducedPrice
+    }
+  }
+}
+
+#2
+mutation{
+  update_price:updatePrice(input:{normalPrice: 250, reducedPrice:150}, id:5){
+    price{
+      normalPrice,
+      reducedPrice
+    }
+  }
+}
+
+#3
+mutation{
+  create_user:createUser(input:{email:"test_do_usu@gmail.com", password: "huhusahu20r913", firstName: "Jan", lastName: "Kowalksi"}){
+    user{
+      id, 
+      email,
+      password,
+      firstName,
+      lastName,
+    }
+  }
+}
+
+#4
+mutation{
+  update_user:updateUser(input:{email:"test_do_usu@gmail.com", password: "huhusahu20r913", firstName: "Jan", lastName: "Kowalski"}, id: 4){
+    user{
+      id, 
+      email,
+      password,
+      firstName,
+      lastName,
+    }
+  }
+}
+
+#5
+mutation{
+  delete_user:deleteUser(id: 4){
+   ok
+  }
+}
