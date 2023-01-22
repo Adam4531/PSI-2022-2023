@@ -53,14 +53,14 @@ class TourList(generics.ListCreateAPIView):
     # filter_class = (StartTourFilter, StartToEndTourFilter)
     search_fields = ['date_start', 'date_end', 'price', 'type_of_tour', 'place', 'unit_price']
     ordering_fields = ['type_of_tour', 'place', 'date_start', 'price']
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly, isOwnerOrReadOnly,)
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
 
 class TourDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Tour.objects.all()
     serializer_class = TourSerializer
     pagination_class = custompagination.LimitOffsetPaginationWithUpperBound
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly, isOwnerOrReadOnly,)
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     name = 'tour-detail'
 
 
@@ -107,7 +107,7 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     pagination_class = custompagination.LimitOffsetPaginationWithUpperBound
-    permission_classes = (permissions.IsAdminUser, isOwnerOrReadOnly,)
+    permission_classes = (permissions.IsAdminUser,)
     name = 'user-detail'
 
 
